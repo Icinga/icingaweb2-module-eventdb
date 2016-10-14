@@ -1,0 +1,65 @@
+<?php
+if (! $this->compact): ?>
+<div class="controls">
+    <?= $this->tabs ?>
+    <?php
+    $helpMessage = $this->translate(
+        'Press and hold the Ctrl key while clicking on rows to select multiple rows or press and hold the Shift key to'
+        . ' select a range of rows',
+        'Multi-selection help'
+    );
+    ?>
+    <div class="selection-info" title="<?= $this->escape($helpMessage) ?>">
+        <?= sprintf(
+        /// TRANSLATORS: Please leave %s as it is because the selection counter is wrapped in a span tag for updating
+        /// the counter via JavaScript
+            $this->translate('%s row(s) selected', 'Multi-selection count'),
+            '<span class="selection-info-count">0</span>'
+        ) ?>
+    </div>
+    <?= $this->paginator ?>
+    <div class="sort-controls-container">
+        <?= $this->limiter ?>
+        <?= $this->sortBox ?>
+    </div>
+    <?= $this->filterEditor ?>
+    <div class="quick-filter-controls">
+        <?= $this->severityFilterForm ?>
+        <?= $this->ackFilterForm ?>
+    </div>
+</div>
+<?php endif ?>
+<div class="content">
+<?php if (! $events->hasResult()): ?>
+    <p><?= $this->translate('No events recorded yet.') ?></p>
+</div>
+<?php return; endif ?>
+    <table class="common-table table-row-selectable multiselect table-responsive events-table"
+           data-base-target="_next"
+           data-icinga-multiselect-url="<?= $this->href('eventdb/events/details') ?>"
+           data-icinga-multiselect-controllers="<?= $this->href('eventdb/events') ?>"
+           data-icinga-multiselect-data="id">
+        <thead>
+            <tr>
+                <th></th>
+                <th></th>
+            <?php foreach ($displayColumns as $displayColumn): ?>
+                <th><?= $this->columnHeader($displayColumn) ?></th>
+            <?php endforeach ?>
+            </tr>
+        </thead>
+        <tbody>
+        <?php foreach ($events as $eventData): /** @var \Icinga\Module\Eventdb\Event $event */ $event = $this->event($eventData) ?>
+            <tr href="<?= $this->url('eventdb/event', array('id' => $event->id)) ?>">
+                <td class="priority-col <?= $event->priority ?>" title="<?= strtoupper($event->priority) ?>"></td>
+                <td class="icon-col ack-col"><?php if ($event->ack) {
+                    echo $this->icon('ok', $this->translate('Acknowledged'));
+                } ?></td>
+            <?php foreach ($displayColumns as $displayColumn): ?>
+                <?= $this->column($displayColumn, $event) ?>
+            <?php endforeach ?>
+            </tr>
+        <?php endforeach ?>
+        </tbody>
+    </table>
+</div>

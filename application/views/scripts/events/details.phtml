@@ -1,0 +1,18 @@
+<div class="controls">
+    <?= $this->tabs ?>
+<?php if ($this->hasPermission('eventdb/interact')): ?>
+    <?= $this->qlink(
+        $this->translate('Comment / Acknowledge') ,
+        $this->url()->setPath('eventdb/comments/new'),
+        null,
+        array(
+            'class'             => 'button-link',
+            'data-base-target'  => '_self',
+            'icon'              => 'comment',
+            'title'             => $this->translate('Comment / Acknowledge')
+        )
+    ) ?>
+<?php else: ?>
+    <p><?= $this->translate('You are not allowed to acknowledge or comment events') ?></p>
+<?php endif ?>
+</div>
