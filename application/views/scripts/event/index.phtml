@@ -1,3 +1,10 @@
+<?php
+$typeIcons = array(
+    $this->icon('comment', $this->translate('Comment')),
+    $this->icon('ok', $this->translate('Acknowledgement')),
+    $this->icon('cancel', $this->translate('Revocation'))
+);
+?>
 <div class="controls">
     <?= $this->tabs ?>
     <?= $this->paginator ?>
@@ -34,7 +41,7 @@
         <tbody>
         <?php foreach ($comments as $comment): ?>
             <tr>
-                <td><?= $this->escape($comment->type) ?></td>
+                <td><?= $typeIcons[$comment->type] ?></td>
                 <td><?= $this->escape($comment->message) ?></td>
                 <td><?= $this->escape($comment->created) ?></td>
                 <td><?= $this->escape($comment->user) ?></td>

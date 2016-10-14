@@ -19,24 +19,30 @@ class Zend_View_Helper_Column extends Zend_View_Helper_Abstract
                 break;
         }
 
-        $renderer = $this->view->columnConfig->get($column, 'renderer', $default);
+        if ($column === 'ack') {
+            $html = $event->$column ? $this->view->icon('ok', $this->view->translate('Acknowledged')) : '-';
+        } else {
+            $renderer = $this->view->columnConfig->get($column, 'renderer', $default);
 
-        switch ($renderer) {
-            case 'host_url':
-                $html = $this->view->qlink($event->$column, 'monitoring/host/show', array('host' => $event->$column));
-                break;
-            case 'service_url':
-                $html = $this->view->qlink($event->$column, 'monitoring/service/show', array('service' => $event->$column, 'host' => $event->host_name));
-                break;
-            case 'url':
-                $html = $this->view->qlink($event->$column, $event->$column);
-                break;
-            case 'message':
-                $html = $this->view->eventMessage($event->$column);
-                break;
-            default:
-                $html = $this->view->escape($event->$column);
-                break;
+            switch ($renderer) {
+                case 'host_url':
+                    $html = $this->view->qlink($event->$column, 'monitoring/host/show',
+                        array('host' => $event->$column));
+                    break;
+                case 'service_url':
+                    $html = $this->view->qlink($event->$column, 'monitoring/service/show',
+                        array('service' => $event->$column, 'host' => $event->host_name));
+                    break;
+                case 'url':
+                    $html = $this->view->qlink($event->$column, $event->$column);
+                    break;
+                case 'message':
+                    $html = $this->view->eventMessage($event->$column);
+                    break;
+                default:
+                    $html = $this->view->escape($event->$column);
+                    break;
+            }
         }
 
         return '<td class="' . 'event-' . $this->view->escape($column) . '">'  . $html . '</td>';
