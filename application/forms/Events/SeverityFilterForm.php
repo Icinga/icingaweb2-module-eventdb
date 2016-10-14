@@ -21,6 +21,11 @@ class SeverityFilterForm extends Form
     protected $filter;
 
     /**
+     * @var array
+     */
+    protected $filterEditorParams = array('modifyFilter', 'addFilter');
+
+    /**
      * {@inheritdoc}
      */
     public function init()
@@ -34,7 +39,9 @@ class SeverityFilterForm extends Form
     public function createElements(array $formData)
     {
         $activePriorities = array();
-        $filter = Filter::fromQueryString((string) $this->getRequest()->getUrl()->getParams()->without('modifyFilter')->without('columns'));
+        $filter = Filter::fromQueryString(
+            (string) $this->getRequest()->getUrl()->getParams()->without($this->filterEditorParams)->without('columns')
+        );
         if (! $filter->isEmpty()) {
             if ($filter->isChain()) {
                 /** @var \Icinga\Data\Filter\FilterChain $filter */
@@ -146,11 +153,16 @@ class SeverityFilterForm extends Form
             }
         }
         $redirect->setQueryString($this->filter->toQueryString());
-        if ($this->getRequest()->getUrl()->getParams()->has('modifyFilter')) {
-            $redirect->getParams()->add('modifyFilter');
+
+        $requestParams = $this->getRequest()->getUrl()->getParams();
+        $redirectParams = $redirect->getParams();
+        foreach ($this->filterEditorParams as $filterEditorParam) {
+            if ($requestParams->has($filterEditorParam)) {
+                $redirectParams->add($filterEditorParam);
+            }
         }
-        if ($this->getRequest()->getUrl()->getParams()->has('columns')) {
-            $redirect->getParams()->add('columns', $this->getRequest()->getUrl()->getParam('columns'));
+        if ($requestParams->has('columns')) {
+            $redirectParams->add('columns', $this->getRequest()->getUrl()->getParam('columns'));
         }
         $this->setRedirectUrl($redirect);
         return true;
