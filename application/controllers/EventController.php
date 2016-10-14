@@ -69,11 +69,6 @@ class EventController extends EventdbController
             ))
             ->where('event_id', $eventId);
 
-        $comments->applyFilter(Filter::matchAny(array_map(
-            '\Icinga\Data\Filter\Filter::fromQueryString',
-            $this->getRestrictions('eventdb/comments/filter', 'eventdb/comments')
-        )));
-
         $this->setupPaginationControl($comments);
 
         $this->setupFilterControl(

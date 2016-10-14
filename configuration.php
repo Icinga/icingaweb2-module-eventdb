@@ -31,8 +31,3 @@ $this->provideRestriction(
     'eventdb/events/filter',
     $this->translate('Restrict views to the events that match the filter')
 );
-
-$this->provideRestriction(
-    'eventdb/comments/filter',
-    $this->translate('Restrict views to the comments that match the filter')
-);
