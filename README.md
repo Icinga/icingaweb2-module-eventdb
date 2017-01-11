@@ -3,7 +3,7 @@
 ## About
 
 With the EventDB Module you can browse, comment and acknowledge events collected
-by [EventDB](https://www.netways.org/projects/eventdb) easily in
+by [EventDB](https://git.netways.org/eventdb/eventdb) easily in
 [Icinga Web 2](https://www.icinga.org/products/icinga-web-2/).
 
 ## Requirements
