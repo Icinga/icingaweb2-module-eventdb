@@ -12,14 +12,15 @@ class EventController extends EventdbController
 {
     public function indexAction()
     {
-        $this->assertPermission('eventdb/comments');
-
         $eventId = $this->params->getRequired('id');
 
         $this->getTabs()->add('event', array(
             'active'    => true,
             'title'     => $this->translate('Event'),
             'url'       => Url::fromRequest()
+        ))->add('comments', array(
+            'title' => $this->translate('Comments'),
+            'url'   => Url::fromRequest()->setPath('eventdb/event/comments')
         ));
 
         $staticColumns = array(
@@ -54,6 +55,32 @@ class EventController extends EventdbController
             '\Icinga\Data\Filter\Filter::fromQueryString',
             $this->getRestrictions('eventdb/events/filter', 'eventdb/events')
         )));
+
+        if ($this->params->get('format') === 'sql') {
+            echo '<pre>'
+                . htmlspecialchars(wordwrap($event))
+                . '</pre>';
+        }
+
+        $this->view->columnConfig = $columnConfig;
+        $this->view->eventData = $event->fetchRow();
+        $this->view->displayColumns = $columns;
+    }
+
+    public function commentsAction()
+    {
+        $this->assertPermission('eventdb/comments');
+
+        $eventId = $this->params->getRequired('id');
+
+        $this->getTabs()->add('event', array(
+            'title' => $this->translate('Event'),
+            'url'   => Url::fromRequest()->setPath('eventdb/event')
+        ))->add('comments', array(
+            'active'    => true,
+            'title'     => $this->translate('Comments'),
+            'url'       => Url::fromRequest()
+        ));
 
         $comments = $this->getDb()
             ->select()
@@ -96,9 +123,6 @@ class EventController extends EventdbController
 
         if ($this->params->get('format') === 'sql') {
             echo '<pre>'
-                . htmlspecialchars(wordwrap($event))
-                . '</pre>';
-            echo '<pre>'
                 . htmlspecialchars(wordwrap($comments))
                 . '</pre>';
             exit;
@@ -113,9 +137,6 @@ class EventController extends EventdbController
             $this->view->commentForm = $commentForm;
         }
 
-        $this->view->columnConfig = $columnConfig;
         $this->view->comments = $comments;
-        $this->view->eventData = $event->fetchRow();
-        $this->view->displayColumns = $columns;
     }
 }

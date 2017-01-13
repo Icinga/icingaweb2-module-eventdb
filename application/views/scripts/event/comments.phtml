@@ -1,0 +1,47 @@
+<?php
+$typeIcons = array(
+    $this->icon('comment', $this->translate('Comment')),
+    $this->icon('ok', $this->translate('Acknowledgement')),
+    $this->icon('cancel', $this->translate('Revocation'))
+);
+?>
+<div class="controls">
+    <?= $this->tabs ?>
+    <?= $this->paginator ?>
+    <div class="sort-controls-container">
+        <?= $this->limiter ?>
+        <?= $this->sortBox ?>
+    </div>
+    <?= $this->filterEditor ?>
+</div>
+<div class="content">
+    <h1><?= $this->translate('Comments') ?></h1>
+<?php if (! $comments->hasResult()): ?>
+    <p><?= $this->translate('No comments recorded for this event yet.') ?></p>
+</div>
+<?php return; endif ?>
+    <table class="common-table">
+        <thead>
+            <tr>
+                <th><?= $this->escape($this->translate('Type')) ?></th>
+                <th><?= $this->escape($this->translate('Comment')) ?></th>
+                <th><?= $this->escape($this->translate('Created')) ?></th>
+                <th><?= $this->escape($this->translate('Author')) ?></th>
+            </tr>
+        </thead>
+        <tbody>
+        <?php foreach ($comments as $comment): ?>
+            <tr>
+                <td><?= $typeIcons[$comment->type] ?></td>
+                <td><?= $this->escape($comment->message) ?></td>
+                <td><?= $this->escape($comment->created) ?></td>
+                <td><?= $this->escape($comment->user) ?></td>
+            </tr>
+        <?php endforeach ?>
+        </tbody>
+    </table>
+<?php if (isset($commentForm)): ?>
+    <h1><?= $this->translate('Comment / Acknowledge') ?></h1>
+    <?= $commentForm ?>
+<?php endif ?>
+</div>
