@@ -6,8 +6,6 @@ namespace Icinga\Module\Eventdb\Controllers;
 use Icinga\Data\Filter\Filter;
 use Icinga\Module\Eventdb\EventdbController;
 use Icinga\Module\Eventdb\Forms\Event\EventCommentForm;
-use Icinga\Module\Eventdb\Forms\Event\MailMeForm;
-use Icinga\Util\StringHelper;
 use Icinga\Web\Url;
 
 class EventController extends EventdbController
