@@ -34,6 +34,7 @@ class EventsController extends EventdbController
             $displayColumns = $this->Config('columns');
             if ($displayColumns->isEmpty()) {
                 $displayColumns = array(
+                    'host_name',
                     'type',
                     'message',
                     'program',
