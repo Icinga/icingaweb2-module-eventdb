@@ -98,4 +98,36 @@ class Eventdb extends DbRepository
 
         return new static($resource);
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function initializeConversionRules()
+    {
+        return array('event' => array('host_address' => 'ip_address'));
+    }
+
+    /**
+     * Convert an IP address into its human-readable form
+     *
+     * @param   string  $rawAddress
+     *
+     * @return  string
+     */
+    protected function retrieveIpAddress($rawAddress)
+    {
+        return $rawAddress === null ? null : inet_ntop($rawAddress);
+    }
+
+    /**
+     * Convert an IP address into its binary form
+     *
+     * @param   string  $address
+     *
+     * @return  string
+     */
+    protected function persistIpAddress($address)
+    {
+        return $address === null ? null : inet_pton($address);
+    }
 }
