@@ -39,9 +39,13 @@ class SeverityFilterForm extends Form
     public function createElements(array $formData)
     {
         $activePriorities = array();
-        $filter = Filter::fromQueryString(
-            (string) $this->getRequest()->getUrl()->getParams()->without($this->filterEditorParams)->without('columns')
-        );
+        $params = $this->getRequest()->getUrl()->getParams()
+            ->without($this->filterEditorParams)
+            ->without('columns')
+            ->without('page');
+
+        $filter = Filter::fromQueryString((string) $params);
+
         if (! $filter->isEmpty()) {
             if ($filter->isChain()) {
                 /** @var \Icinga\Data\Filter\FilterChain $filter */
