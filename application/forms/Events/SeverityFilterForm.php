@@ -112,7 +112,11 @@ class SeverityFilterForm extends Form
                 && ! isset($excludedPriorities[$id])
             ) {
                 $class .= ' active';
+                $title = $this->translate('Filter out %s');
+            } else {
+                $title = $this->translate('Filter in %s');
             }
+            
             $label = ucfirst(substr($priority, 0, 1));
             if ($id === 3) {
                 $label .= substr($priority, 1, 1);
@@ -122,7 +126,8 @@ class SeverityFilterForm extends Form
                 $priority,
                 array(
                     'class' => $class,
-                    'label' => $label
+                    'label' => $label,
+                    'title' => sprintf($title, ucfirst($priority)),
                 )
             );
         }
