@@ -75,17 +75,20 @@ class Event extends ArrayObject
 
     public function getFacility()
     {
-        return static::$facilities[(int) parent::offsetGet('facility')];
+        $facility = (int) parent::offsetGet('facility');
+        return array_key_exists($facility, static::$facilities) ? static::$facilities[$facility] : $facility;
     }
 
     public function getPriority()
     {
-        return static::$priorities[(int) parent::offsetGet('priority')];
+        $priority = (int) parent::offsetGet('priority');
+        return array_key_exists($priority, static::$priorities) ? static::$priorities[$priority] : $priority;
     }
 
     public function getType()
     {
-        return static::$types[(int) parent::offsetGet('type')];
+        $type = (int) parent::offsetGet('type');
+        return array_key_exists($type, static::$types) ? static::$types[$type] : $type;
     }
 
     public static function fromData($data)
