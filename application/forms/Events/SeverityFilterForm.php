@@ -5,18 +5,19 @@ namespace Icinga\Module\Eventdb\Forms\Events;
 
 use Icinga\Data\Filter\Filter;
 use Icinga\Data\Filter\FilterAnd;
+use Icinga\Data\Filter\FilterChain;
+use Icinga\Data\Filter\FilterExpression;
 use Icinga\Data\Filter\FilterMatch;
-use Icinga\Data\Filter\FilterOr;
 use Icinga\Module\Eventdb\Event;
-use Icinga\Module\Eventdb\Eventdb;
 use Icinga\Web\Form;
 
 class SeverityFilterForm extends Form
 {
-    protected $activePriorities;
+    protected $includedPriorities;
+    protected $excludedPriorities;
 
     /**
-     * @var Filter
+     * @var FilterChain
      */
     protected $filter;
 
@@ -33,67 +34,89 @@ class SeverityFilterForm extends Form
         $this->setAttrib('class', 'inline severity-filter-form');
     }
 
+    protected function findPriorities(Filter $filter, $sign, &$target)
+    {
+        if ($filter->isEmpty()) {
+            return;
+        }
+
+        if ($filter->isChain()) {
+            /** @var FilterChain $filter */
+            foreach ($filter->filters() as $part) {
+                /** @var Filter $part */
+                if (! $part->isEmpty() && $part->isExpression()) {
+                    /** @var FilterMatch $part */
+                    if (strtolower($part->getColumn()) === 'priority' && $part->getSign() === $sign) {
+                        $expression = $part->getExpression();
+                        if (is_array($expression)) {
+                            foreach ($expression as $priority) {
+                                $target[(int) $priority] = $part;
+                            }
+                        } else {
+                            $target[(int) $expression] = $part;
+                        }
+                    }
+                } else {
+                    /** @var FilterChain $part */
+                    foreach ($part->filters() as $or) {
+                        /** @var FilterExpression $or */
+                        if (strtolower($or->getColumn()) === 'priority' && $or->getSign() === $sign) {
+                            $expression = $or->getExpression();
+                            if (is_array($expression)) {
+                                foreach ($expression as $priority) {
+                                    $target[(int) $priority] = $or;
+                                }
+                            } else {
+                                $target[(int) $expression] = $or;
+                            }
+                        }
+                    }
+                }
+            }
+        } else {
+            /** @var FilterMatch $filter */
+            if (strtolower($filter->getColumn()) === 'priority' && $filter->getSign() === $sign) {
+                $expression = $filter->getExpression();
+                if (is_array($expression)) {
+                    foreach ($expression as $priority) {
+                        $target[(int) $priority] = $filter;
+                    }
+                } else {
+                    $target[(int) $expression] = $filter;
+                }
+            }
+        }
+    }
+
     /**
      * {@inheritdoc}
      */
     public function createElements(array $formData)
     {
-        $activePriorities = array();
-        $filter = Filter::fromQueryString(
-            (string) $this->getRequest()->getUrl()->getParams()->without($this->filterEditorParams)->without('columns')
-        );
-        if (! $filter->isEmpty()) {
-            if ($filter->isChain()) {
-                /** @var \Icinga\Data\Filter\FilterChain $filter */
-                foreach ($filter->filters() as $part) {
-                    /** @var \Icinga\Data\Filter\Filter $part */
-                    if (! $part->isEmpty() && $part->isExpression()) {
-                        /** @var \Icinga\Data\Filter\FilterMatch $part */
-                        if (strtolower($part->getColumn()) === 'priority' && $part->getSign() === '=') {
-                            $expression = $part->getExpression();
-                            if (is_array($expression)) {
-                                foreach ($expression as $priority) {
-                                    $activePriorities[(int) $priority] = $part;
-                                }
-                            } else {
-                                $activePriorities[(int) $expression] = $part;
-                            }
-                        }
-                    } else {
-                        foreach ($part->filters() as $or) {
-                            if (strtolower($or->getColumn()) === 'priority' && $or->getSign() === '=') {
-                                $expression = $or->getExpression();
-                                if (is_array($expression)) {
-                                    foreach ($expression as $priority) {
-                                        $activePriorities[(int) $priority] = $or;
-                                    }
-                                } else {
-                                    $activePriorities[(int) $expression] = $or;
-                                }
-                            }
-                        }
-                    }
-                }
-            } else {
-                /** @var \Icinga\Data\Filter\FilterMatch $filter */
-                if (strtolower($filter->getColumn()) === 'priority' && $filter->getSign() === '=') {
-                    $expression = $filter->getExpression();
-                    if (is_array($expression)) {
-                        foreach ($expression as $priority) {
-                            $activePriorities[(int) $priority] = $filter;
-                        }
-                    } else {
-                        $activePriorities[(int) $expression] = $filter;
-                    }
-                }
-            }
-        }
+        $includedPriorities = array();
+        $excludedPriorities = array();
+        $params = $this->getRequest()->getUrl()->getParams()
+            ->without($this->filterEditorParams)
+            ->without('columns')
+            ->without('page');
+
+        $filter = Filter::fromQueryString((string) $params);
+
+        $this->findPriorities($filter, '=', $includedPriorities);
+        $this->findPriorities($filter, '!=', $excludedPriorities);
 
         foreach (Event::$priorities as $id => $priority) {
             $class = $priority;
-            if (isset($activePriorities[$id])) {
+            if (
+                (empty($includedPriorities) or isset($includedPriorities[$id]))
+                && ! isset($excludedPriorities[$id])
+            ) {
                 $class .= ' active';
+                $title = $this->translate('Filter out %s');
+            } else {
+                $title = $this->translate('Filter in %s');
             }
+            
             $label = ucfirst(substr($priority, 0, 1));
             if ($id === 3) {
                 $label .= substr($priority, 1, 1);
@@ -102,13 +125,16 @@ class SeverityFilterForm extends Form
                 'submit',
                 $priority,
                 array(
-                    'class'         => $class,
-                    'label'         => $label
+                    'class' => $class,
+                    'label' => $label,
+                    'title' => sprintf($title, ucfirst($priority)),
                 )
             );
         }
 
-        $this->activePriorities = $activePriorities;
+        $this->includedPriorities = $includedPriorities;
+        $this->excludedPriorities = $excludedPriorities;
+
         $this->filter = $filter;
     }
 
@@ -120,38 +146,66 @@ class SeverityFilterForm extends Form
         reset($postData);
         $priority = Event::getPriorityId(key($postData));
         $redirect = clone $this->getRequest()->getUrl();
-        if ($this->filter->isEmpty()) {
-            $this->filter = FilterAnd::where('priority', $priority);
-        } elseif ($this->filter->isExpression()) {
-            if (isset($this->activePriorities[$priority])) {
-                // Fake empty
-                $this->filter = new FilterAnd();
-            } elseif (! empty($this->activePriorities)) {
-                $this->filter = $this->filter->orFilter(Filter::expression('priority', '=', $priority));
-            } else {
-                $this->filter = $this->filter->andFilter(Filter::expression('priority', '=', $priority));
+
+        // convert inclusion to exclusion
+        if (! empty($this->includedPriorities)) {
+            if (empty($this->excludedPriorities)) {
+                $this->excludedPriorities = array();
             }
-        } else {
-            foreach ($this->activePriorities as $filter) {
-                $this->filter = $this->filter->removeId($filter->getId());
+            // set exclusion with for all not included values
+            foreach (array_keys(Event::$priorities) as $id) {
+                if (! isset($this->includedPriorities[$id])
+                    && ! isset($this->excludedPriorities[$id])
+                ) {
+                    $this->excludedPriorities[$id] = true;
+                }
             }
-            if (isset($this->activePriorities[$priority])) {
-                unset($this->activePriorities[$priority]);
-            } else {
-                $this->activePriorities[$priority] = true;
-            }
-            $priorities = array();
-            foreach (array_keys($this->activePriorities) as $id) {
-                $priorities[] = Filter::expression('priority', '=', $id);
-            }
-            if ($this->filter->isEmpty()) {
-                $this->filter = Filter::matchAny($priorities);
-            } else {
-                $this->filter = $this->filter->andFilter(
-                    Filter::matchAny($priorities)
-                );
+            // purge from inclusions from filter
+            if ($this->filter instanceof FilterChain) {
+                foreach ($this->includedPriorities as $filter) {
+                    if ($filter instanceof Filter) {
+                        /** @var Filter $filter */
+                        $this->filter = $this->filter->removeId($filter->getId());
+                    }
+                }
             }
         }
+
+        if ($this->filter instanceof FilterChain) {
+            // purge existing exclusions from a complex filter
+            foreach ($this->excludedPriorities as $filter) {
+                if ($filter instanceof Filter) {
+                    /** @var Filter $filter */
+                    $this->filter = $this->filter->removeId($filter->getId());
+                }
+            }
+        } elseif (! empty($this->excludedPriorities)) {
+            // empty the filter - because it only was a simple exclusion
+            $this->filter = new FilterAnd;
+        }
+
+        // toggle exclusion
+        if (isset($this->excludedPriorities[$priority])) {
+            // in exclusion: just remove
+            unset($this->excludedPriorities[$priority]);
+        } else {
+            // not set: add to exclusion
+            $this->excludedPriorities[$priority] = true;
+        }
+
+        $priorityFilter = Filter::matchAll();
+        foreach (array_keys($this->excludedPriorities) as $id) {
+            $priorityFilter->andFilter(Filter::expression('priority', '!=', $id));
+        }
+
+        if ($this->filter->isEmpty()) {
+            // set the Filter
+            $this->filter = $priorityFilter;
+        } else {
+            // append our filter to the rest of the existing Filter
+            $this->filter = $this->filter->andFilter($priorityFilter);
+        }
+
         $redirect->setQueryString($this->filter->toQueryString());
 
         $requestParams = $this->getRequest()->getUrl()->getParams();

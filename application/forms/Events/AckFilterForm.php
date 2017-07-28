@@ -23,9 +23,12 @@ class AckFilterForm extends Form
     {
         if ((bool) $this->getRequest()->getUrl()->getParams()->get('ack', true)) {
             $icon = 'ok';
+            $title = $this->translate('Hide acknowledged events');
         } else {
             $icon = 'cancel';
+            $title = $this->translate('Show also acknowledged events');
         }
+
         $this->addElements(array(
             array(
                 'button',
@@ -40,7 +43,7 @@ class AckFilterForm extends Form
                     'ignore'        => true,
                     'label'         => $this->getView()->icon($icon) . $this->translate('Ack'),
                     'type'          => 'submit',
-                    'title'         => $this->translate('Toggle acknowledge'),
+                    'title'         => $title,
                     'value'         => $this->translate('Ack')
                 )
             )

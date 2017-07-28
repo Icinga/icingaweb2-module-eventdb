@@ -1,11 +1,19 @@
 @color-priority-emergency: #ff2200;
+@color-priority-emergency-fg: white;
 @color-priority-alert: #ff4400;
+@color-priority-alert-fg: white;
 @color-priority-critical: #ff6600;
+@color-priority-critical-fg: white;
 @color-priority-error: #ff8800;
-@color-priority-warning: #ffff00;
-@color-priority-notice: #00ff00;
+@color-priority-error-fg: white;
+@color-priority-warning: #ffaa44; // same as @color-warning
+@color-priority-warning-fg: #6d572b;
+@color-priority-notice: #44bb77; // same as @color-ok;
+@color-priority-notice-fg: white;
 @color-priority-information: #aaaaff;
-@color-priority-debug: #bbbbbb;
+@color-priority-information-fg: #32486d;
+@color-priority-debug: #ccc;
+@color-priority-debug-fg: #333;
 
 .events-table {
   border-collapse: separate;
@@ -79,36 +87,56 @@
     padding: 0;
   }
 
+  .active {
+    font-weight: bold;
+  }
+
   .emergency.active {
+    background-color: @color-priority-emergency;
     border-color: @color-priority-emergency;
+    color: @color-priority-emergency-fg;
   }
 
   .alert.active {
+    background-color: @color-priority-alert;
     border-color: @color-priority-alert;
+    color: @color-priority-alert-fg;
   }
 
   .critical.active {
+    background-color: @color-priority-critical;
     border-color: @color-priority-critical;
+    color: @color-priority-critical-fg;
   }
 
   .error.active {
+    background-color: @color-priority-error;
     border-color: @color-priority-error;
+    color: @color-priority-error-fg;
   }
 
   .warning.active {
+    background-color: @color-priority-warning;
     border-color: @color-priority-warning;
+    color: @color-priority-warning-fg;
   }
 
   .notice.active {
+    background-color: @color-priority-notice;
     border-color: @color-priority-notice;
+    color: @color-priority-notice-fg;
   }
 
-  .information.active {
+  .information.active, .info.active {
+    background-color: @color-priority-information;
     border-color: @color-priority-information;
+    color: @color-priority-information-fg;
   }
 
   .debug.active {
+    background-color: @color-priority-debug;
     border-color: @color-priority-debug;
+    color: @color-priority-debug-fg;
   }
 }
 
