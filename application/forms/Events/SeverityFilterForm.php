@@ -5,10 +5,10 @@ namespace Icinga\Module\Eventdb\Forms\Events;
 
 use Icinga\Data\Filter\Filter;
 use Icinga\Data\Filter\FilterAnd;
+use Icinga\Data\Filter\FilterChain;
+use Icinga\Data\Filter\FilterExpression;
 use Icinga\Data\Filter\FilterMatch;
-use Icinga\Data\Filter\FilterOr;
 use Icinga\Module\Eventdb\Event;
-use Icinga\Module\Eventdb\Eventdb;
 use Icinga\Web\Form;
 
 class SeverityFilterForm extends Form
@@ -16,7 +16,7 @@ class SeverityFilterForm extends Form
     protected $activePriorities;
 
     /**
-     * @var Filter
+     * @var FilterChain
      */
     protected $filter;
 
@@ -48,11 +48,11 @@ class SeverityFilterForm extends Form
 
         if (! $filter->isEmpty()) {
             if ($filter->isChain()) {
-                /** @var \Icinga\Data\Filter\FilterChain $filter */
+                /** @var FilterChain $filter */
                 foreach ($filter->filters() as $part) {
-                    /** @var \Icinga\Data\Filter\Filter $part */
+                    /** @var Filter $part */
                     if (! $part->isEmpty() && $part->isExpression()) {
-                        /** @var \Icinga\Data\Filter\FilterMatch $part */
+                        /** @var FilterMatch $part */
                         if (strtolower($part->getColumn()) === 'priority' && $part->getSign() === '=') {
                             $expression = $part->getExpression();
                             if (is_array($expression)) {
@@ -64,7 +64,9 @@ class SeverityFilterForm extends Form
                             }
                         }
                     } else {
+                        /** @var FilterChain $part */
                         foreach ($part->filters() as $or) {
+                            /** @var FilterExpression $or */
                             if (strtolower($or->getColumn()) === 'priority' && $or->getSign() === '=') {
                                 $expression = $or->getExpression();
                                 if (is_array($expression)) {
@@ -79,7 +81,7 @@ class SeverityFilterForm extends Form
                     }
                 }
             } else {
-                /** @var \Icinga\Data\Filter\FilterMatch $filter */
+                /** @var FilterMatch $filter */
                 if (strtolower($filter->getColumn()) === 'priority' && $filter->getSign() === '=') {
                     $expression = $filter->getExpression();
                     if (is_array($expression)) {
@@ -95,7 +97,7 @@ class SeverityFilterForm extends Form
 
         foreach (Event::$priorities as $id => $priority) {
             $class = $priority;
-            if (isset($activePriorities[$id])) {
+            if (empty($activePriorities) or isset($activePriorities[$id])) {
                 $class .= ' active';
             }
             $label = ucfirst(substr($priority, 0, 1));
@@ -106,8 +108,8 @@ class SeverityFilterForm extends Form
                 'submit',
                 $priority,
                 array(
-                    'class'         => $class,
-                    'label'         => $label
+                    'class' => $class,
+                    'label' => $label
                 )
             );
         }
@@ -137,6 +139,7 @@ class SeverityFilterForm extends Form
             }
         } else {
             foreach ($this->activePriorities as $filter) {
+                /** @var Filter $filter */
                 $this->filter = $this->filter->removeId($filter->getId());
             }
             if (isset($this->activePriorities[$priority])) {
