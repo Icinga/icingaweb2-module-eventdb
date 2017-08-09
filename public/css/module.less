@@ -19,9 +19,10 @@ h2 {
   margin-top: 1em;
 }
 
-.events-table {
+.events-table, .event-summary-table {
   border-collapse: separate;
   border-spacing: 0 1px;
+  padding: 0;
 }
 
 .ack-col {
@@ -182,9 +183,11 @@ h2 {
   }
 }
 
-.events-table .event-message {
-  max-width: 60em;
-  font-family: @font-family-fixed;
+.events-table, .event-summary-table {
+  .event-message {
+    max-width: 60em;
+    font-family: @font-family-fixed;
+  }
 }
 
 .event-message {

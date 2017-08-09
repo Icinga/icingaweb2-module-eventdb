@@ -5,6 +5,7 @@ namespace Icinga\Module\Eventdb\Controllers;
 
 use Icinga\Data\Filter\Filter;
 use Icinga\Module\Eventdb\EventdbController;
+use Icinga\Module\Eventdb\Forms\Event\EventCommentForm;
 use Icinga\Module\Eventdb\Forms\Events\AckFilterForm;
 use Icinga\Module\Eventdb\Forms\Events\SeverityFilterForm;
 use Icinga\Util\StringHelper;
@@ -130,5 +131,43 @@ class EventsController extends EventdbController
             'title' => $this->translate('Events'),
             'url'   => Url::fromRequest()
         ))->activate('events');
+
+        $columns = array(
+            'ack',
+            'id',
+            'priority',
+            'type',
+            'host_name',
+            'host_address',
+            'created',
+            'message',
+            'program',
+            'facility'
+        );
+
+        $events = $this->getDb()
+            ->select()
+            ->from('event', $columns);
+
+        $filter = Filter::fromQueryString($this->getRequest()->getUrl()->getQueryString());
+        $events->applyFilter($filter);
+
+        $events->applyFilter(Filter::matchAny(array_map(
+            '\Icinga\Data\Filter\Filter::fromQueryString',
+            $this->getRestrictions('eventdb/events/filter', 'eventdb/events')
+        )));
+
+        $commentForm = null;
+        if ($this->hasPermission('eventdb/interact')) {
+            $commentForm = new EventCommentForm();
+            $commentForm
+                ->setDb($this->getDb())
+                ->setFilter($filter)
+                ->handleRequest();
+            $this->view->commentForm = $commentForm;
+        }
+
+        $this->view->events = $events->fetchAll();
+        $this->view->columnConfig = $this->Config('columns');
     }
 }
