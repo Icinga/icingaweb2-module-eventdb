@@ -47,7 +47,7 @@ class Event extends ArrayObject
 
     public static $types = array(
         0 => 'syslog',
-        1 => 'smnp',
+        1 => 'snmp',
         2 => 'mail'
     );
 
