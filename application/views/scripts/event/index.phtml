@@ -5,8 +5,8 @@
     <table class="name-value-table">
         <?php $event = $this->event($this->eventData); foreach ($displayColumns as $column): ?>
             <tr>
-                <th><?= $this->columnHeader($column) ?></th>
-                <td><?= $this->column($column, $event) ?></td>
+                <?= $this->columnHeader($column) ?>
+                <?= $this->column($column, $event) ?>
             </tr>
         <?php endforeach ?>
     </table>

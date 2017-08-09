@@ -44,7 +44,7 @@ if (! $this->compact): ?>
                 <th></th>
                 <th></th>
             <?php foreach ($displayColumns as $displayColumn): ?>
-                <th><?= $this->columnHeader($displayColumn) ?></th>
+                <?= $this->columnHeader($displayColumn) ?>
             <?php endforeach ?>
             </tr>
         </thead>
