@@ -3,10 +3,16 @@
 
 namespace Icinga\Module\Eventdb;
 
+use Icinga\Application\Icinga;
+use Icinga\Exception\IcingaException;
+use Icinga\Module\Monitoring\Backend\MonitoringBackend;
 use Icinga\Web\Controller;
 
 class EventdbController extends Controller
 {
+    /** @var  MonitoringBackend */
+    protected $monitoringBackend;
+
     /**
      * Get the EventDB repository
      *
@@ -42,4 +48,24 @@ class EventdbController extends Controller
         }
         return $restrictions;
     }
+
+    /**
+     * Retrieves the Icinga MonitoringBackend
+     *
+     * @param string|null $name
+     *
+     * @return MonitoringBackend
+     * @throws IcingaException When monitoring is not enabled
+     */
+    protected function monitoringBackend($name = null)
+    {
+        if ($this->monitoringBackend === null) {
+            if (!Icinga::app()->getModuleManager()->hasEnabled('monitoring')) {
+                throw new IcingaException('The module "monitoring" must be enabled and configured!');
+            }
+            $this->monitoringBackend = MonitoringBackend::instance($name);
+        }
+        return $this->monitoringBackend;
+    }
+
 }

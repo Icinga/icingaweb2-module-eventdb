@@ -49,42 +49,59 @@ if (! $this->compact): ?>
 
     <h2><?= $this->translate('Actions') ?></h2>
     <table class="name-value-table" data-base-target="_next">
-        <th><?= $this->translate('Other events for') ?></th>
-        <td><?= $this->qlink(
-                $this->translate('Host'),
-                'eventdb/events',
-                array('host_name' => $event->host_name),
-                array(
-                    'icon'    => 'search',
-                    'class' => 'action-link'
-                )
-            ) ?>
-        <?php if ($event->program): ?>
-            <?= $this->qlink(
-                $this->translate('Program'),
-                'eventdb/events',
-                array(
-                    'program'   => $event->program,
-                ),
-                array(
-                    'icon'    => 'search',
-                    'class' => 'action-link'
-                )
-            ) ?>
-            <?= $this->qlink(
-                $this->translate('Program and Host'),
-                'eventdb/events',
-                array(
-                    'host_name' => $event->host_name,
-                    'program'   => $event->program,
-                ),
-                array(
-                    'icon'    => 'search',
-                    'class' => 'action-link'
-                )
-            ) ?>
-        <?php endif; ?>
-        </td>
+        <tr>
+            <th><?= $this->translate('Other events for') ?></th>
+            <td><?= $this->qlink(
+                    $this->translate('Host'),
+                    'eventdb/events',
+                    array('host_name' => $event->host_name),
+                    array(
+                        'icon'    => 'search',
+                        'class' => 'action-link'
+                    )
+                ) ?>
+                <?php if ($event->program): ?>
+                    <?= $this->qlink(
+                        $this->translate('Program'),
+                        'eventdb/events',
+                        array(
+                            'program'   => $event->program,
+                        ),
+                        array(
+                            'icon'    => 'search',
+                            'class' => 'action-link'
+                        )
+                    ) ?>
+                    <?= $this->qlink(
+                        $this->translate('Program and Host'),
+                        'eventdb/events',
+                        array(
+                            'host_name' => $event->host_name,
+                            'program'   => $event->program,
+                        ),
+                        array(
+                            'icon'    => 'search',
+                            'class' => 'action-link'
+                        )
+                    ) ?>
+                <?php endif; ?>
+            </td>
+        </tr>
+        <tr>
+        <tr>
+            <th><?= $this->translate('Monitoring') ?></th>
+            <td>
+                <?= $this->qlink(
+                    $this->translate('Host service status'),
+                    'eventdb/event/host',
+                    array('host' => $event->host_name),
+                    array(
+                        'icon'  => 'search',
+                        'class' => 'action-link'
+                    )
+                ) ?>
+            </td>
+        </tr>
     </table>
 
     <?php if (isset($commentForm)): ?>

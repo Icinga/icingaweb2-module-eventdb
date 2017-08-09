@@ -4,6 +4,7 @@
 namespace Icinga\Module\Eventdb\Controllers;
 
 use Icinga\Data\Filter\Filter;
+use Icinga\Exception\NotFoundError;
 use Icinga\Module\Eventdb\EventdbController;
 use Icinga\Module\Eventdb\Forms\Event\EventCommentForm;
 use Icinga\Web\Url;
@@ -115,5 +116,63 @@ class EventController extends EventdbController
                 array('id' => $this->params->getRequired('id'))
             )
         );
+    }
+
+    /**
+     * Action allowing you to be forwarded to host in Icinga monitoring
+     *
+     * **But** case insensitive!
+     */
+    public function hostAction()
+    {
+        $host = $this->params->getRequired('host');
+
+        $backend = $this->monitoringBackend();
+
+        $query = $backend->select()
+            ->from('hoststatus', array('host_name'))
+            ->where('host', $host);
+
+        $realHostname = $query->fetchOne();
+
+        if ($realHostname !== null) {
+            $this->redirectNow(Url::fromPath('monitoring/host/services', array('host' => $realHostname)));
+        } else {
+            throw new NotFoundError('Could not find a hostname matching: %s', $host);
+        }
+    }
+
+    /**
+     * Action allowing you to be forwarded to host in Icinga monitoring
+     *
+     * **But** case insensitive!
+     */
+    public function serviceAction()
+    {
+        $host = $this->params->getRequired('host');
+        $service = $this->params->getRequired('service');
+
+        $backend = $this->monitoringBackend();
+
+        $query = $backend->select()
+            ->from('servicestatus', array('host_name', 'service'))
+            ->where('host', $host)
+            ->where('service', $service);
+
+        $realService = $query->fetchRow();
+
+        if ($realService !== null) {
+            $this->redirectNow(
+                Url::fromPath(
+                    'monitoring/service/show',
+                    array(
+                        'host' => $realService->host_name,
+                        'service' => $realService->service
+                    )
+                )
+            );
+        } else {
+            throw new NotFoundError('Could not find a service "%s" for host "%s"', $service, $host);
+        }
     }
 }

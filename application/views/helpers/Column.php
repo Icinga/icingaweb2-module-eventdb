@@ -26,11 +26,11 @@ class Zend_View_Helper_Column extends Zend_View_Helper_Abstract
 
             switch ($renderer) {
                 case 'host_url':
-                    $html = $this->view->qlink($event->$column, 'monitoring/host/show',
+                    $html = $this->view->qlink($event->$column, 'eventdb/event/host',
                         array('host' => $event->$column));
                     break;
                 case 'service_url':
-                    $html = $this->view->qlink($event->$column, 'monitoring/service/show',
+                    $html = $this->view->qlink($event->$column, 'eventdb/event/service',
                         array('service' => $event->$column, 'host' => $event->host_name));
                     break;
                 case 'url':
@@ -46,6 +46,6 @@ class Zend_View_Helper_Column extends Zend_View_Helper_Abstract
         }
 
         return '<td class="' . 'event-' . $this->view->escape($column) . ' '
-            . implode(' ', $classes) . '">'  . $html . '</td>';
+            . implode(' ', $classes) . '" data-base-target="_next">'  . $html . '</td>';
     }
 }
