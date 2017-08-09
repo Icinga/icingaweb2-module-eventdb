@@ -12,6 +12,12 @@ use Icinga\Web\Url;
 
 class EventsController extends EventdbController
 {
+    public function init()
+    {
+        parent::init();
+        $this->view->title = 'EventDB: ' . $this->translate('Events');
+    }
+
     public function indexAction()
     {
         $this->assertPermission('eventdb/events');
@@ -26,8 +32,10 @@ class EventsController extends EventdbController
             'ack',
             'id',
             'priority',
+            'type',
             'host_name',
-            'host_address'
+            'host_address',
+            'created'
         );
 
         if (! $this->params->has('columns')) {
@@ -35,11 +43,9 @@ class EventsController extends EventdbController
             if ($displayColumns->isEmpty()) {
                 $displayColumns = array(
                     'host_name',
-                    'type',
                     'message',
                     'program',
-                    'facility',
-                    'created'
+                    'facility'
                 );
             } else {
                 $displayColumns = $displayColumns->keys();
@@ -67,9 +73,9 @@ class EventsController extends EventdbController
                 'host_name'     => $this->translate('Host'),
                 'host_address'  => $this->translate('Host Address'),
                 'type'          => $this->translate('Type'),
+                'program'       => $this->translate('Program'),
                 'facility'      => $this->translate('Facility'),
                 'priority'      => $this->translate('Priority'),
-                'program'       => $this->translate('Program'),
                 'message'       => $this->translate('Message'),
                 'ack'           => $this->translate('Acknowledged'),
                 'created'       => $this->translate('Created')
@@ -85,9 +91,9 @@ class EventsController extends EventdbController
                 'host_name'     => $this->translate('Host'),
                 'host_address'  => $this->translate('Host Address'),
                 'type'          => $this->translate('Type'),
+                'program'       => $this->translate('Program'),
                 'facility'      => $this->translate('Facility'),
                 'priority'      => $this->translate('Priority'),
-                'program'       => $this->translate('Program'),
                 'message'       => $this->translate('Message'),
                 'ack'           => $this->translate('Acknowledged'),
                 'created'       => $this->translate('Created')

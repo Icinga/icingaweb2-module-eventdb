@@ -25,35 +25,73 @@
 }
 
 .priority-col {
+  width: 8em;
   border-left: 5px solid;
-  padding: 0;
-  width: 0;
+  white-space: nowrap;
+  text-align: center;
+  margin-right: 1em;
+  padding: 0.33em 1em;
 
   &.emergency {
     border-left-color: @color-priority-emergency;
+    background-color: @color-priority-emergency;
+    color: @color-priority-emergency-fg;
+
+    &.ack {
+      color: inherit;
+      background-color: inherit;
+    }
   }
 
   &.critical {
     border-left-color: @color-priority-critical;
+    background-color: @color-priority-critical;
+    color: @color-priority-critical-fg;
+
+    &.ack {
+      color: inherit;
+      background-color: inherit;
+    }
   }
 
   &.alert {
     border-left-color: @color-priority-alert;
+    background-color: @color-priority-alert;
+    color: @color-priority-alert-fg;
+
+    &.ack {
+      color: inherit;
+      background-color: inherit;
+    }
   }
 
   &.error {
     border-left-color: @color-priority-error;
+    background-color: @color-priority-error;
+    color: @color-priority-error-fg;
+
+    &.ack {
+      color: inherit;
+      background-color: inherit;
+    }
   }
 
   &.warning {
     border-left-color: @color-priority-warning;
+    background-color: @color-priority-warning;
+    color: @color-priority-warning-fg;
+
+    &.ack {
+      color: inherit;
+      background-color: inherit;
+    }
   }
 
   &.notice {
     border-left-color: @color-priority-notice;
   }
 
-  &.information {
+  &.information, &.info {
     border-left-color: @color-priority-information;
   }
 
@@ -142,4 +180,5 @@
 
 .events-table .event-message {
   max-width: 60em;
+  font-family: @font-family-fixed;
 }
