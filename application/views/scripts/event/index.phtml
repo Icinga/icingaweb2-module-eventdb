@@ -1,14 +1,112 @@
+<?php
+/** @var \Icinga\Module\Eventdb\Event $event */
+$event = $this->event($this->eventData);
+
+$commentIcons = array(
+    $this->icon('comment', $this->translate('Comment')),
+    $this->icon('ok', $this->translate('Acknowledgement')),
+    $this->icon('cancel', $this->translate('Revocation'))
+);
+
+if (! $this->compact): ?>
 <div class="controls">
     <?= $this->tabs ?>
 </div>
+<?php endif ?>
 <div class="content">
+    <table class="event-summary-table">
+        <tr>
+            <td rowspan="2" class="priority-col <?= $event->getPriority() ?> <?= $event->ack ? 'ack' : '' ?>">
+                <div class="priority-label"><?= strtoupper($event->getPriority()) ?></div>
+                <div class="event-meta"><span class="timeago" title="<?= $event->created ?>"><?= $this->timeAgo(strtotime($event->created)) ?></span></div>
+            </td>
+            <td rowspan="2" class="icon-col" title="<?= $event->getType() ?>">
+                <?= $this->icon($event->getTypeIcon()) ?>
+                <?php if ($event->ack) { echo $this->icon('ok', $this->translate('Acknowledged')); } ?>
+            </td>
+            <?= $this->column('host_name', $event, array('selectable')) ?>
+        </tr>
+        <tr>
+            <?= $this->column('host_address', $event, array('selectable')) ?>
+        </tr>
+    </table>
+    <h2><?= $this->translate('Details') ?></h2>
     <table class="name-value-table">
-        <?php $event = $this->event($this->eventData); foreach ($displayColumns as $column): ?>
+        <?php
+        $event = $this->event($this->eventData); foreach ($displayColumns as $column):
+            if ($column === 'message') continue;
+        ?>
             <tr>
                 <?= $this->columnHeader($column) ?>
                 <?= $this->column($column, $event) ?>
             </tr>
         <?php endforeach ?>
     </table>
+    <?php if ($event->message): ?>
+    <h2><?= $this->translate('Message') ?></h2>
+    <div class="event-message detail preformatted"><?= $event->message ?></div>
+    <?php endif; ?>
+
+    <h2><?= $this->translate('Actions') ?></h2>
+    <table class="name-value-table" data-base-target="_next">
+        <th><?= $this->translate('Other events for') ?></th>
+        <td><?= $this->qlink(
+                $this->translate('Host'),
+                'eventdb/events',
+                array('host_name' => $event->host_name),
+                array(
+                    'icon'    => 'search',
+                    'class' => 'action-link'
+                )
+            ) ?>
+        <?php if ($event->program): ?>
+            <?= $this->qlink(
+                $this->translate('Program'),
+                'eventdb/events',
+                array(
+                    'program'   => $event->program,
+                ),
+                array(
+                    'icon'    => 'search',
+                    'class' => 'action-link'
+                )
+            ) ?>
+            <?= $this->qlink(
+                $this->translate('Program and Host'),
+                'eventdb/events',
+                array(
+                    'host_name' => $event->host_name,
+                    'program'   => $event->program,
+                ),
+                array(
+                    'icon'    => 'search',
+                    'class' => 'action-link'
+                )
+            ) ?>
+        <?php endif; ?>
+        </td>
+    </table>
+
+    <h2>Comments</h2>
+    <?php if (! $comments->hasResult()): ?>
+    <p><?= $this->translate('No comments recorded for this event yet.') ?></p>
+    <?php else: ?>
+    <table class="common-table comments-table">
+        <tbody>
+        <?php foreach ($comments as $comment): ?>
+            <tr>
+                <td class="comment-created timeago" title="<?= $comment->created ?>"><?= $this->timeAgo(strtotime($comment->created)) ?></td>
+                <td class="comment-type"><?= $commentIcons[$comment->type] ?></td>
+                <td class="comment-user"><?= $this->escape($comment->user) ?></td>
+                <td class="comment-message"><?= $this->escape($comment->message) ?></td>
+            </tr>
+        <?php endforeach ?>
+        </tbody>
+    </table>
+    <?php endif; ?>
+    <?php if (isset($commentForm)): ?>
+        <h3><?= $this->translate('Add comment / acknowledge') ?></h3>
+        <div class="comment-form"><?= $commentForm ?></div>
+    <?php endif ?>
 </div>
 

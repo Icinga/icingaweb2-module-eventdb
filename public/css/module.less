@@ -15,6 +15,10 @@
 @color-priority-debug: #ccc;
 @color-priority-debug-fg: #333;
 
+h2 {
+  margin-top: 1em;
+}
+
 .events-table {
   border-collapse: separate;
   border-spacing: 0 1px;
@@ -181,4 +185,73 @@
 .events-table .event-message {
   max-width: 60em;
   font-family: @font-family-fixed;
+}
+
+.event-message {
+  &.detail {
+    font-size: 1.2em;
+    border-left: 5px solid #eee;
+    padding: 0.66em 0.33em;
+  }
+}
+
+.event-summary-table {
+  .event-host_address {
+    font-family: @font-family-fixed;
+    font-size: 0.9em;
+    color: @gray;
+  }
+}
+
+a.action-link {
+  color: @icinga-blue !important;
+  margin-right: 1em;
+}
+
+.name-value-table {
+  th {
+    width: 8em;
+  }
+}
+
+.comments-table {
+  width: auto;
+
+  tr {
+    border-bottom: none;
+  }
+
+  td {
+    padding: 0.5em 0.5em;
+  }
+
+  .comment-created {
+    max-width: 10em;
+  }
+  .comment-type {
+    max-width: 2em;
+  }
+  .comment-message {
+    min-width: 30em;
+    font-style: @font-family-fixed;
+  }
+}
+
+i.large {
+  font-size: 1.3em;
+}
+
+label > i {
+  margin-left: 0.1em;
+}
+
+.comment-form {
+  .control-label-group {
+    width: 6em;
+  }
+
+  textarea {
+    height: 4em;
+    width: 30em;
+  }
 }

@@ -51,21 +51,29 @@ class EventCommentForm extends Form
      */
     public function createElements(array $formData)
     {
+        $view = $this->getView();
         $this->addElement(
-            'select',
+            'radio',
             'type',
             array(
-                'label'         => $this->translate('Type'),
-                'multiOptions'  => static::$types,
-                'required'      => true
+                'label'        => $this->translate('Type'),
+                'multiOptions' => array(
+                    0 => $view->icon('comment', $this->translate('Comment'), array('class' => 'large')),
+                    1 => $view->icon('ok', $this->translate('Acknowledge'), array('class' => 'large')),
+                    2 => $view->icon('cancel', $this->translate('Revoke'), array('class' => 'large')),
+                ),
+                'required'     => true,
+                'value'        => 1,
+                'separator'    => '&nbsp;&nbsp;&nbsp;',
+                'escape'       => false
             )
         );
         $this->addElement(
             'textarea',
             'comment',
             array(
-                'label'         => $this->translate('Comment'),
-                'required'      => true
+                'label'    => $this->translate('Comment'),
+                'required' => true
             )
         );
     }
@@ -84,17 +92,17 @@ class EventCommentForm extends Form
         try {
             foreach ($events as $event) {
                 $this->db->insert('comment', array(
-                    'event_id'  => $event->id,
-                    'type'      => $type,
-                    'message'   => $comment,
-                    'created'   => date(Eventdb::DATETIME_FORMAT),
-                    'modified'  => date(Eventdb::DATETIME_FORMAT),
-                    'user'      => $username
+                    'event_id' => $event->id,
+                    'type'     => $type,
+                    'message'  => $comment,
+                    'created'  => date(Eventdb::DATETIME_FORMAT),
+                    'modified' => date(Eventdb::DATETIME_FORMAT),
+                    'user'     => $username
                 ));
 
                 if ($type !== '0') {
                     $this->db->update('event', array(
-                        'ack'   => $type === '1' ? 1 : 0
+                        'ack' => $type === '1' ? 1 : 0
                     ), Filter::where('id', $event->id));
                 }
             }
