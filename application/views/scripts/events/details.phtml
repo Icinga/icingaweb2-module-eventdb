@@ -1,18 +1,32 @@
+<?php if (! $this->compact): ?>
 <div class="controls">
     <?= $this->tabs ?>
-<?php if ($this->hasPermission('eventdb/interact')): ?>
-    <?= $this->qlink(
-        $this->translate('Comment / Acknowledge') ,
-        $this->url()->setPath('eventdb/comments/new'),
-        null,
-        array(
-            'class'             => 'button-link',
-            'data-base-target'  => '_self',
-            'icon'              => 'comment',
-            'title'             => $this->translate('Comment / Acknowledge')
-        )
-    ) ?>
-<?php else: ?>
-    <p><?= $this->translate('You are not allowed to acknowledge or comment events') ?></p>
+</div>
 <?php endif ?>
+<div class="content">
+    <table class="common-table event-summary-table table-row-selectable" data-base-target="_next">
+    <?php foreach($events as $eventData):
+        /** @var \Icinga\Module\Eventdb\Event $event */
+        $event = $this->event($eventData);
+        $url = $this->url('eventdb/event', array('id' => $event->id));
+    ?>
+        <tr href="<?= $url ?>">
+            <td class="priority-col <?= $event->getPriority() ?> <?= $event->ack ? 'ack' : '' ?>">
+                <div class="priority-label"><?= strtoupper($event->getPriority()) ?></div>
+                <div class="event-meta"><span class="timeago" title="<?= $event->created ?>"><?= $this->timeAgo(strtotime($event->created)) ?></span></div>
+            </td>
+            <td class="icon-col" title="<?= $event->getType() ?>">
+                <?= $this->icon($event->getTypeIcon()) ?>
+                <?php if ($event->ack) { echo $this->icon('ok', $this->translate('Acknowledged')); } ?>
+            </td>
+            <?= $this->column('host_name', $event) ?>
+            <?= $this->column('program', $event) ?>
+            <?= $this->column('message', $event) ?>
+        </tr>
+    <?php endforeach; ?>
+    </table>
+    <?php if (isset($commentForm)): ?>
+        <h3><?= $this->translate('Add comment / acknowledge') ?></h3>
+        <div class="comment-form"><?= $commentForm ?></div>
+    <?php endif ?>
 </div>

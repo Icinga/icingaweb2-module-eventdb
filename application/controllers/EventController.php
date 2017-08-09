@@ -18,14 +18,13 @@ class EventController extends EventdbController
             'active'    => true,
             'title'     => $this->translate('Event'),
             'url'       => Url::fromRequest()
-        ))->add('comments', array(
-            'title' => $this->translate('Comments'),
-            'url'   => Url::fromRequest()->setPath('eventdb/event/comments')
         ));
 
         $staticColumns = array(
-            'ack',
             'id',
+            'created',
+            'type',
+            'ack',
             'priority',
             'host_name',
             'host_address'
@@ -34,11 +33,9 @@ class EventController extends EventdbController
         $columnConfig = $this->Config('columns');
         if ($columnConfig->isEmpty()) {
             $displayColumns = array(
-                'type',
                 'message',
                 'program',
-                'facility',
-                'created'
+                'facility'
             );
         } else {
             $displayColumns = $columnConfig->keys();
@@ -56,87 +53,67 @@ class EventController extends EventdbController
             $this->getRestrictions('eventdb/events/filter', 'eventdb/events')
         )));
 
-        if ($this->params->get('format') === 'sql') {
+        $comments = null;
+        $commentForm = null;
+        if ($this->hasPermission('eventdb/comments')) {
+            $comments = $this->getDb()
+                ->select()
+                ->from('comment', array(
+                    'id',
+                    'type',
+                    'message',
+                    'created',
+                    'modified',
+                    'user'
+                ))
+                ->where('event_id', $eventId)
+                ->order('created', 'DESC');
+
+            if ($this->hasPermission('eventdb/interact')) {
+                $commentForm = new EventCommentForm();
+                $commentForm
+                    ->setDb($this->getDb())
+                    ->setFilter(Filter::expression('id', '=', $eventId));
+                $this->view->commentForm = $commentForm;
+            }
+
+            $this->view->comments = $comments;
+        }
+
+        $format = $this->params->get('format');
+        if ($format === 'sql') {
             echo '<pre>'
                 . htmlspecialchars(wordwrap($event))
                 . '</pre>';
+
+            if ($comments !== null) {
+                echo '<pre>'
+                    . htmlspecialchars(wordwrap($comments))
+                    . '</pre>';
+            }
+
+            exit;
+        }
+
+        if ($commentForm !== null) {
+            $commentForm->handleRequest();
         }
 
         $this->view->columnConfig = $columnConfig;
         $this->view->eventData = $event->fetchRow();
-        $this->view->displayColumns = $columns;
+        $this->view->displayColumns = $displayColumns;
     }
 
+    /**
+     * @deprecated redirects to index view now
+     */
     public function commentsAction()
     {
-        $this->assertPermission('eventdb/comments');
-
-        $eventId = $this->params->getRequired('id');
-
-        $this->getTabs()->add('event', array(
-            'title' => $this->translate('Event'),
-            'url'   => Url::fromRequest()->setPath('eventdb/event')
-        ))->add('comments', array(
-            'active'    => true,
-            'title'     => $this->translate('Comments'),
-            'url'       => Url::fromRequest()
-        ));
-
-        $comments = $this->getDb()
-            ->select()
-            ->from('comment', array(
-                'id',
-                'type',
-                'message',
-                'created',
-                'modified',
-                'user'
-            ))
-            ->where('event_id', $eventId);
-
-        $this->setupPaginationControl($comments);
-
-        $this->setupFilterControl(
-            $comments,
-            array(
-                'type'      => $this->translate('Type'),
-                'message'   => $this->translate('Comment'),
-                'created'   => $this->translate('Created'),
-                'user'      => $this->translate('Author')
-            ),
-            array('message'),
-            array('id', 'format')
+        $this->redirectNow(
+            Url::fromPath(
+                'eventdb/event',
+                array('id' => $this->params->getRequired('id'))
+            )
         );
-
-        $this->setupLimitControl();
-
-        $this->setupSortControl(
-            array(
-                'type'      => $this->translate('Type'),
-                'message'   => $this->translate('Comment'),
-                'created'   => $this->translate('Created'),
-                'user'      => $this->translate('Author')
-            ),
-            $comments,
-            array('created' => 'desc')
-        );
-
-        if ($this->params->get('format') === 'sql') {
-            echo '<pre>'
-                . htmlspecialchars(wordwrap($comments))
-                . '</pre>';
-            exit;
-        }
-
-        if ($this->hasPermission('eventdb/interact')) {
-            $commentForm = new EventCommentForm();
-            $commentForm
-                ->setDb($this->getDb())
-                ->setFilter(Filter::expression('id', '=', $eventId))
-                ->handleRequest();
-            $this->view->commentForm = $commentForm;
-        }
-
-        $this->view->comments = $comments;
     }
 }

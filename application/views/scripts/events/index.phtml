@@ -44,17 +44,32 @@ if (! $this->compact): ?>
                 <th></th>
                 <th></th>
             <?php foreach ($displayColumns as $displayColumn): ?>
-                <th><?= $this->columnHeader($displayColumn) ?></th>
+                <?= $this->columnHeader($displayColumn) ?>
             <?php endforeach ?>
             </tr>
         </thead>
         <tbody>
-        <?php foreach ($events as $eventData): /** @var \Icinga\Module\Eventdb\Event $event */ $event = $this->event($eventData) ?>
-            <tr href="<?= $this->url('eventdb/event', array('id' => $event->id)) ?>">
-                <td class="priority-col <?= $event->priority ?>" title="<?= strtoupper($event->priority) ?>"></td>
-                <td class="icon-col ack-col"><?php if ($event->ack) {
-                    echo $this->icon('ok', $this->translate('Acknowledged'));
-                } ?></td>
+        <?php
+        foreach ($events as $eventData):
+            /** @var \Icinga\Module\Eventdb\Event $event */
+            $event = $this->event($eventData);
+            $created = $event->created;
+            $createdTs = strtotime($created);
+            $url = $this->url('eventdb/event', array('id' => $event->id));
+            $classes = array('priority-col', $event->getPriority());
+            if ($event->ack) {
+                $classes[] = 'ack';
+            }
+            ?>
+            <tr href="<?= $url ?>">
+                <td class="<?= implode(' ', $classes) ?>">
+                    <div class="priority-label"><?= strtoupper($event->getPriority()) ?></div>
+                    <div class="event-meta"><a href="<?= $url ?>" class="timeago" title="<?= $created ?>"><?= $this->timeAgo($createdTs) ?></a></div>
+                </td>
+                <td class="icon-col" title="<?= $event->getType() ?>">
+                    <?= $this->icon($event->getTypeIcon()) ?>
+                    <?php if ($event->ack) { echo $this->icon('ok', $this->translate('Acknowledged')); } ?>
+                </td>
             <?php foreach ($displayColumns as $displayColumn): ?>
                 <?= $this->column($displayColumn, $event) ?>
             <?php endforeach ?>

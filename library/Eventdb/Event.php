@@ -47,8 +47,15 @@ class Event extends ArrayObject
 
     public static $types = array(
         0 => 'syslog',
-        1 => 'smnp',
+        1 => 'snmp',
         2 => 'mail'
+    );
+
+    public static $typeIcons = array(
+        '_default' => 'help',
+        'syslog'   => 'doc-text',
+        'snmp'     => 'plug',
+        'mail'     => 'bell',
     );
 
     public function __construct($data)
@@ -89,6 +96,15 @@ class Event extends ArrayObject
     {
         $type = (int) parent::offsetGet('type');
         return array_key_exists($type, static::$types) ? static::$types[$type] : $type;
+    }
+
+    public function getTypeIcon()
+    {
+        if (array_key_exists($type = $this->getType(), static::$typeIcons)) {
+            return static::$typeIcons[$type];
+        } else {
+            return static::$typeIcons['_default'];
+        }
     }
 
     public static function fromData($data)

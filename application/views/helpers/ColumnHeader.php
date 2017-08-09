@@ -3,10 +3,10 @@
 
 class Zend_View_Helper_ColumnHeader extends Zend_View_Helper_Abstract
 {
-    public function columnHeader($columnHeader)
+    public function columnHeader($columnHeader, $classes = array())
     {
-        return $this->view->escape(
+        return '<th classes="' . implode(' ', $classes) . '">' . $this->view->escape(
             $this->view->columnConfig->get($columnHeader, 'label', ucwords(str_replace('_', ' ', $columnHeader)))
-        );
+        ) . '</th>';
     }
 }

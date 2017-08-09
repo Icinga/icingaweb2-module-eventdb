@@ -15,9 +15,14 @@
 @color-priority-debug: #ccc;
 @color-priority-debug-fg: #333;
 
-.events-table {
+h2 {
+  margin-top: 1em;
+}
+
+.events-table, .event-summary-table {
   border-collapse: separate;
   border-spacing: 0 1px;
+  padding: 0;
 }
 
 .ack-col {
@@ -25,35 +30,73 @@
 }
 
 .priority-col {
+  width: 8em;
   border-left: 5px solid;
-  padding: 0;
-  width: 0;
+  white-space: nowrap;
+  text-align: center;
+  margin-right: 1em;
+  padding: 0.33em 1em;
 
   &.emergency {
     border-left-color: @color-priority-emergency;
+    background-color: @color-priority-emergency;
+    color: @color-priority-emergency-fg;
+
+    &.ack {
+      color: inherit;
+      background-color: inherit;
+    }
   }
 
   &.critical {
     border-left-color: @color-priority-critical;
+    background-color: @color-priority-critical;
+    color: @color-priority-critical-fg;
+
+    &.ack {
+      color: inherit;
+      background-color: inherit;
+    }
   }
 
   &.alert {
     border-left-color: @color-priority-alert;
+    background-color: @color-priority-alert;
+    color: @color-priority-alert-fg;
+
+    &.ack {
+      color: inherit;
+      background-color: inherit;
+    }
   }
 
   &.error {
     border-left-color: @color-priority-error;
+    background-color: @color-priority-error;
+    color: @color-priority-error-fg;
+
+    &.ack {
+      color: inherit;
+      background-color: inherit;
+    }
   }
 
   &.warning {
     border-left-color: @color-priority-warning;
+    background-color: @color-priority-warning;
+    color: @color-priority-warning-fg;
+
+    &.ack {
+      color: inherit;
+      background-color: inherit;
+    }
   }
 
   &.notice {
     border-left-color: @color-priority-notice;
   }
 
-  &.information {
+  &.information, &.info {
     border-left-color: @color-priority-information;
   }
 
@@ -140,6 +183,73 @@
   }
 }
 
-.events-table .event-message {
-  max-width: 60em;
+.events-table, .event-summary-table {
+  .event-message {
+    max-width: 60em;
+    font-family: @font-family-fixed;
+  }
+}
+
+.event-message {
+  &.detail {
+    font-size: 1.2em;
+    border-left: 5px solid #eee;
+    padding: 0.66em 0.33em;
+  }
+}
+
+.event-summary-table {
+  .event-host_address {
+    font-family: @font-family-fixed;
+    font-size: 0.9em;
+    color: @gray;
+  }
+}
+
+a.action-link {
+  color: @icinga-blue !important;
+  margin-right: 1em;
+}
+
+.name-value-table {
+  th {
+    width: 8em;
+  }
+}
+
+.comments-table {
+  width: auto;
+
+  tr {
+    border-bottom: none;
+  }
+
+  td {
+    padding: 0.5em 0.5em;
+  }
+
+  .comment-created {
+    white-space: nowrap;
+  }
+  .comment-type {
+    max-width: 2em;
+  }
+  .comment-message {
+    min-width: 30em;
+    font-family: @font-family-fixed;
+  }
+}
+
+.comment-form {
+  select {
+    width: auto;
+  }
+
+  input[name=comment] {
+    width: 25em;
+  }
+
+  input[type=submit] {
+    padding: 0.2em 0.5em;
+  }
 }

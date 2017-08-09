@@ -5,7 +5,7 @@ use Icinga\Module\Eventdb\Event;
 
 class Zend_View_Helper_Column extends Zend_View_Helper_Abstract
 {
-    public function column($column, Event $event)
+    public function column($column, Event $event, $classes = array())
     {
         switch ($column) {
             case 'host_name':
@@ -45,6 +45,7 @@ class Zend_View_Helper_Column extends Zend_View_Helper_Abstract
             }
         }
 
-        return '<td class="' . 'event-' . $this->view->escape($column) . '">'  . $html . '</td>';
+        return '<td class="' . 'event-' . $this->view->escape($column) . ' '
+            . implode(' ', $classes) . '">'  . $html . '</td>';
     }
 }

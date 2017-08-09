@@ -5,6 +5,7 @@ namespace Icinga\Module\Eventdb\Controllers;
 
 use Icinga\Data\Filter\Filter;
 use Icinga\Module\Eventdb\EventdbController;
+use Icinga\Module\Eventdb\Forms\Event\EventCommentForm;
 use Icinga\Module\Eventdb\Forms\Events\AckFilterForm;
 use Icinga\Module\Eventdb\Forms\Events\SeverityFilterForm;
 use Icinga\Util\StringHelper;
@@ -12,6 +13,12 @@ use Icinga\Web\Url;
 
 class EventsController extends EventdbController
 {
+    public function init()
+    {
+        parent::init();
+        $this->view->title = 'EventDB: ' . $this->translate('Events');
+    }
+
     public function indexAction()
     {
         $this->assertPermission('eventdb/events');
@@ -26,8 +33,10 @@ class EventsController extends EventdbController
             'ack',
             'id',
             'priority',
+            'type',
             'host_name',
-            'host_address'
+            'host_address',
+            'created'
         );
 
         if (! $this->params->has('columns')) {
@@ -35,11 +44,9 @@ class EventsController extends EventdbController
             if ($displayColumns->isEmpty()) {
                 $displayColumns = array(
                     'host_name',
-                    'type',
                     'message',
                     'program',
-                    'facility',
-                    'created'
+                    'facility'
                 );
             } else {
                 $displayColumns = $displayColumns->keys();
@@ -67,9 +74,9 @@ class EventsController extends EventdbController
                 'host_name'     => $this->translate('Host'),
                 'host_address'  => $this->translate('Host Address'),
                 'type'          => $this->translate('Type'),
+                'program'       => $this->translate('Program'),
                 'facility'      => $this->translate('Facility'),
                 'priority'      => $this->translate('Priority'),
-                'program'       => $this->translate('Program'),
                 'message'       => $this->translate('Message'),
                 'ack'           => $this->translate('Acknowledged'),
                 'created'       => $this->translate('Created')
@@ -85,9 +92,9 @@ class EventsController extends EventdbController
                 'host_name'     => $this->translate('Host'),
                 'host_address'  => $this->translate('Host Address'),
                 'type'          => $this->translate('Type'),
+                'program'       => $this->translate('Program'),
                 'facility'      => $this->translate('Facility'),
                 'priority'      => $this->translate('Priority'),
-                'program'       => $this->translate('Program'),
                 'message'       => $this->translate('Message'),
                 'ack'           => $this->translate('Acknowledged'),
                 'created'       => $this->translate('Created')
@@ -102,6 +109,8 @@ class EventsController extends EventdbController
                 . '</pre>';
             exit;
         }
+
+        $this->setAutorefreshInterval(15);
 
         $severityFilterForm = new SeverityFilterForm();
         $severityFilterForm->handleRequest();
@@ -124,5 +133,43 @@ class EventsController extends EventdbController
             'title' => $this->translate('Events'),
             'url'   => Url::fromRequest()
         ))->activate('events');
+
+        $columns = array(
+            'ack',
+            'id',
+            'priority',
+            'type',
+            'host_name',
+            'host_address',
+            'created',
+            'message',
+            'program',
+            'facility'
+        );
+
+        $events = $this->getDb()
+            ->select()
+            ->from('event', $columns);
+
+        $filter = Filter::fromQueryString($this->getRequest()->getUrl()->getQueryString());
+        $events->applyFilter($filter);
+
+        $events->applyFilter(Filter::matchAny(array_map(
+            '\Icinga\Data\Filter\Filter::fromQueryString',
+            $this->getRestrictions('eventdb/events/filter', 'eventdb/events')
+        )));
+
+        $commentForm = null;
+        if ($this->hasPermission('eventdb/interact')) {
+            $commentForm = new EventCommentForm();
+            $commentForm
+                ->setDb($this->getDb())
+                ->setFilter($filter)
+                ->handleRequest();
+            $this->view->commentForm = $commentForm;
+        }
+
+        $this->view->events = $events->fetchAll();
+        $this->view->columnConfig = $this->Config('columns');
     }
 }
