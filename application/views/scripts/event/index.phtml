@@ -87,6 +87,10 @@ if (! $this->compact): ?>
         </td>
     </table>
 
+    <?php if (isset($commentForm)): ?>
+    <h2><?= $this->translate('Add comment / acknowledge') ?></h2>
+    <div class="comment-form"><?= $commentForm ?></div>
+    <?php endif ?>
     <h2>Comments</h2>
     <?php if (! $comments->hasResult()): ?>
     <p><?= $this->translate('No comments recorded for this event yet.') ?></p>
@@ -104,9 +108,5 @@ if (! $this->compact): ?>
         </tbody>
     </table>
     <?php endif; ?>
-    <?php if (isset($commentForm)): ?>
-        <h3><?= $this->translate('Add comment / acknowledge') ?></h3>
-        <div class="comment-form"><?= $commentForm ?></div>
-    <?php endif ?>
 </div>
 

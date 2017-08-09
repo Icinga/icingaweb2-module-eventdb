@@ -229,32 +229,27 @@ a.action-link {
   }
 
   .comment-created {
-    max-width: 10em;
+    white-space: nowrap;
   }
   .comment-type {
     max-width: 2em;
   }
   .comment-message {
     min-width: 30em;
-    font-style: @font-family-fixed;
+    font-family: @font-family-fixed;
   }
-}
-
-i.large {
-  font-size: 1.3em;
-}
-
-label > i {
-  margin-left: 0.1em;
 }
 
 .comment-form {
-  .control-label-group {
-    width: 6em;
+  select {
+    width: auto;
   }
 
-  textarea {
-    height: 4em;
-    width: 30em;
+  input[name=comment] {
+    width: 25em;
+  }
+
+  input[type=submit] {
+    padding: 0.2em 0.5em;
   }
 }

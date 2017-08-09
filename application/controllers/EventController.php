@@ -66,7 +66,8 @@ class EventController extends EventdbController
                     'modified',
                     'user'
                 ))
-                ->where('event_id', $eventId);
+                ->where('event_id', $eventId)
+                ->order('created', 'DESC');
 
             if ($this->hasPermission('eventdb/interact')) {
                 $commentForm = new EventCommentForm();

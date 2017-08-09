@@ -29,6 +29,14 @@ class EventCommentForm extends Form
     /**
      * {@inheritdoc}
      */
+    public static $defaultElementDecorators = array(
+        array('ViewHelper', array('separator' => '')),
+        array('Errors', array('separator' => '')),
+    );
+
+    /**
+     * {@inheritdoc}
+     */
     public function init()
     {
         $this->setSubmitLabel($this->translate('Submit'));
@@ -53,23 +61,21 @@ class EventCommentForm extends Form
     {
         $view = $this->getView();
         $this->addElement(
-            'radio',
+            'select',
             'type',
             array(
-                'label'        => $this->translate('Type'),
-                'multiOptions' => array(
-                    0 => $view->icon('comment', $this->translate('Comment'), array('class' => 'large')),
-                    1 => $view->icon('ok', $this->translate('Acknowledge'), array('class' => 'large')),
-                    2 => $view->icon('cancel', $this->translate('Revoke'), array('class' => 'large')),
+                'label'         => $this->translate('Type'),
+                'multiOptions'  => array(
+                    0 => $this->translate('Comment'),
+                    1 => $this->translate('Acknowledge'),
+                    2 => $this->translate('Revoke')
                 ),
-                'required'     => true,
-                'value'        => 1,
-                'separator'    => '&nbsp;&nbsp;&nbsp;',
-                'escape'       => false
+                'required'      => true,
+                'value'         => 1,
             )
         );
         $this->addElement(
-            'textarea',
+            'text',
             'comment',
             array(
                 'label'    => $this->translate('Comment'),
@@ -113,5 +119,23 @@ class EventCommentForm extends Form
             $this->error($e->getMessage());
             return false;
         }
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function loadDefaultDecorators()
+    {
+        parent::loadDefaultDecorators();
+
+        $this->removeDecorator('FormHints');
+    }
+
+    public function addSubmitButton()
+    {
+        parent::addSubmitButton();
+
+        $btn = $this->getElement('btn_submit');
+        $btn->removeDecorator('HtmlTag');
     }
 }
