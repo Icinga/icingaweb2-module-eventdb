@@ -110,6 +110,8 @@ class EventsController extends EventdbController
             exit;
         }
 
+        $this->setAutorefreshInterval(15);
+
         $severityFilterForm = new SeverityFilterForm();
         $severityFilterForm->handleRequest();
 
