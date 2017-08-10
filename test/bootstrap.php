@@ -12,5 +12,5 @@ call_user_func(function () {
     ini_set('include_path', $include_path);
 
     require_once $basedir . '/library/Eventdb/Test/Bootstrap.php';
-    Bootstrap::cli($basedir);
+    Bootstrap::web($basedir);
 });
