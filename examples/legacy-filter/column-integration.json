@@ -1,0 +1,50 @@
+/*
+  NOTE: this is a JSON file with comments. You might not be able to parse it, depending on the implementation!
+
+  These are the filter features mapped by the edbColumn.js integration.
+
+  See https://git.netways.org/eventdb/eventdb/blob/master/icinga-cronk/EventDB/lib/js/edbColumn.js
+*/
+{
+  "hostFilter": {
+    // Note: `data.host` is by default the hostname, unless set in edb_filter
+    "include_pattern": "{{mapped from data.host}}",
+    "include_pattern_type": "regexp",
+    "exclude_pattern_type": "disabled",
+    "exclude_pattern": false,
+    "include_set": [],
+    "exclude_set": []
+  },
+  "programFilter": {
+    "include_pattern": false,
+    "include_pattern_type": "disabled",
+    "exclude_pattern": false,
+    "exclude_pattern_type": "disabled",
+    "include_set": [ /* mapped from data.programInclusion */ ],
+    "exclude_set": [ /* mapped from data.programExclusion */ ]
+  },
+  "messageFilter": {
+    "items": [ /* mapped from data.msg */ ]
+  },
+  "misc": {
+    "hideAck": false
+  },
+  "sourceExclusion": [ /* mapped from data.sourceExclusion */ ],
+  "priorityExclusion": [ /* mapped from data.priorityExclusion */ ],
+  "facilityExclusion": [ /* mapped from data.facilityExclusion */ ],
+  "timespan": {
+    "from": "{{ mapped from data.startTime }}",
+    "to": -1
+  },
+  "display": {
+    "order": {
+      "field": "created",
+      "dir": "desc"
+    },
+    "group": {
+      "field": null
+    },
+    "count": "id",
+    "limit": 50
+  }
+}

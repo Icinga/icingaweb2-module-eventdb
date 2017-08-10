@@ -1,0 +1,77 @@
+/*
+  NOTE: this is a JSON file with comments. You might not be able to parse it, depending on the implementation!
+
+  This is the full filter style, that the old EventDB Cronk supported.
+
+  The old monitoring integration *did not* support the exact filter.
+*/
+{
+  "hostFilter": {
+    "include_pattern": "test",
+    "include_pattern_type": "exact",
+    "exclude_pattern_type": "regexp",
+    "exclude_pattern": "aa.*b",
+    "include_set": [
+      "test"
+    ],
+    "exclude_set": []
+  },
+  "programFilter": {
+    "include_pattern": false,
+    "include_pattern_type": "disabled",
+    "exclude_pattern": "test",
+    "exclude_pattern_type": "contains",
+    "include_set": [
+      ""
+    ],
+    "exclude_set": []
+  },
+  "messageFilter": {
+    "items": [
+      {
+        "type": "exc",
+        "message": "onlydebug",
+        "isRegexp": false
+      },
+      {
+        "type": "inc",
+        "message": "needthis.*",
+        "isRegexp": true
+      }
+    ]
+  },
+  "misc": {
+    "hideAck": true
+  },
+  "sourceExclusion": [
+    "2",
+    "3",
+    "4"
+  ],
+  "priorityExclusion": [
+    "5",
+    "6",
+    "7"
+  ],
+  "facilityExclusion": [
+    "8",
+    "9",
+    "10",
+    "11"
+  ],
+  "timespan": {
+    "from": 1502362200,
+    "to": 1502362200
+  },
+  "display": {
+    "order": {
+      "field": "created",
+      "dir": "desc"
+    },
+    "group": {
+      "field": null
+    },
+    "count": "id",
+    "limit": 200
+  }
+}
