@@ -16,3 +16,9 @@ Screenshots
 **Monitoring actions**
 
 ![Screenshot](screenshots/monitoring-actions.png)
+
+**Monitoring detail view**
+
+For Icinga Web 2 >= 2.5.0
+
+![Screenshot](screenshots/monitoring-detailview.png)

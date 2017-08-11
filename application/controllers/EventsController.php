@@ -102,6 +102,7 @@ class EventsController extends EventdbController
             $events,
             array('created' => 'desc')
         );
+        $events->peekAhead();
 
         if ($this->params->get('format') === 'sql') {
             echo '<pre>'

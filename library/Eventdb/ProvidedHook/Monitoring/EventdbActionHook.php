@@ -19,51 +19,46 @@ use Icinga\Web\UrlParams;
 
 class EventdbActionHook
 {
+    protected static $wantCache = true;
+
     protected static $cachedNav = array();
 
+    protected static $customFilters = array();
+
+    public static function wantCache($bool=true)
+    {
+        static::$wantCache = $bool;
+    }
+
     /**
-     * @param MonitoredObject $object    Host or Service to render for
-     * @param bool            $no_cache  Only for testing - to avoid caching
+     * @param MonitoredObject $object
+     * @param bool            $no_cache
      *
-     * @return array|Navigation
+     * @return null|Filter
      */
-    public static function getActions(MonitoredObject $object, $no_cache = true)
+    public static function getCustomFilter(MonitoredObject $object)
     {
         if (! Auth::getInstance()->hasPermission('eventdb/events')) {
-            return array();
+            return null;
         }
 
-        $type = $object->getType();
-        $objectKey = sprintf('%!%', $type, $object->host_name);
-        if ($type === 'service') {
-            $objectKey .= '!' . $object->service_description;
+        $objectKey = static::getObjectKey($object);
+
+        // check cache if the filter already have been rendered
+        if (static::$wantCache && array_key_exists($objectKey, self::$customFilters)) {
+            return self::$customFilters[$objectKey];
         }
 
-        // check cache if the buttons already have been rendered
-        if (! $no_cache && array_key_exists($objectKey, self::$cachedNav)) {
-            return self::$cachedNav[$objectKey];
-        }
-
-        $nav = new Navigation();
-
-        $config = Config::module('eventdb')->getSection('monitoring');
-
+        $config = static::config();
         $custom_var = $config->get('custom_var', null);
 
-        $edb_cv = null;
-        $edb_filter = null;
         $service = null;
-        $always_on = null;
-
+        $edb_filter = null;
         if ($custom_var !== null && $object instanceof Service) {
-            $edb_cv = $object->{'_service_' . $custom_var};
             $edb_filter = $object->{'_service_' . $custom_var . '_filter'};
             $service = $object->service_description;
-            $always_on = $config->get('always_on_service', 0);
         } elseif ($custom_var !== null && $object instanceof Host) {
-            $edb_cv = $object->{'_host_' . $custom_var};
             $edb_filter = $object->{'_host_' . $custom_var . '_filter'};
-            $always_on = $config->get('always_on_host', 0);
         }
 
         $customFilter = null;
@@ -91,6 +86,46 @@ class EventdbActionHook
             }
         }
 
+        return self::$customFilters[$objectKey] = $customFilter;
+    }
+
+    /**
+     * @param MonitoredObject $object    Host or Service to render for
+     * @param bool            $no_cache  Only for testing - to avoid caching
+     *
+     * @return array|Navigation
+     */
+    public static function getActions(MonitoredObject $object)
+    {
+        if (! Auth::getInstance()->hasPermission('eventdb/events')) {
+            return array();
+        }
+
+        $objectKey = static::getObjectKey($object);
+
+        // check cache if the buttons already have been rendered
+        if (static::$wantCache && array_key_exists($objectKey, self::$cachedNav)) {
+            return self::$cachedNav[$objectKey];
+        }
+
+        $nav = new Navigation();
+
+        $config = static::config();
+
+        $custom_var = $config->get('custom_var', null);
+
+        $edb_cv = null;
+        $always_on = null;
+
+        if ($custom_var !== null && $object instanceof Service) {
+            $edb_cv = $object->{'_service_' . $custom_var};
+            $always_on = $config->get('always_on_service', 0);
+        } elseif ($custom_var !== null && $object instanceof Host) {
+            $edb_cv = $object->{'_host_' . $custom_var};
+            $always_on = $config->get('always_on_host', 0);
+        }
+
+        $customFilter = static::getCustomFilter($object);
         if ($customFilter !== null) {
             $params = UrlParams::fromQueryString($customFilter->toQueryString());
             $nav->addItem(
@@ -128,5 +163,20 @@ class EventdbActionHook
         }
 
         return self::$cachedNav[$objectKey] = $nav;
+    }
+
+    protected static function getObjectKey(MonitoredObject $object)
+    {
+        $type = $object->getType();
+        $objectKey = sprintf('%!%', $type, $object->host_name);
+        if ($type === 'service') {
+            $objectKey .= '!' . $object->service_description;
+        }
+        return $objectKey;
+    }
+
+    protected static function config()
+    {
+        return Config::module('eventdb')->getSection('monitoring');
     }
 }

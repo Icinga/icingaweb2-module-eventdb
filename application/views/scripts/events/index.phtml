@@ -1,5 +1,4 @@
-<?php
-if (! $this->compact): ?>
+<?php if (! $this->compact): ?>
 <div class="controls">
     <?= $this->tabs ?>
     <?php
@@ -30,7 +29,7 @@ if (! $this->compact): ?>
 </div>
 <?php endif ?>
 <div class="content">
-<?php if (! $events->hasResult()): ?>
+<?php /** @var \Icinga\Repository\RepositoryQuery $events */if (! $events->hasResult()): ?>
     <p><?= $this->translate('No events recorded yet.') ?></p>
 </div>
 <?php return; endif ?>
@@ -39,6 +38,7 @@ if (! $this->compact): ?>
            data-icinga-multiselect-url="<?= $this->href('eventdb/events/details') ?>"
            data-icinga-multiselect-controllers="<?= $this->href('eventdb/events') ?>"
            data-icinga-multiselect-data="id">
+        <?php if (! $this->compact): ?>
         <thead>
             <tr>
                 <th></th>
@@ -48,6 +48,7 @@ if (! $this->compact): ?>
             <?php endforeach ?>
             </tr>
         </thead>
+        <?php endif; ?>
         <tbody>
         <?php
         foreach ($events as $eventData):
@@ -77,4 +78,15 @@ if (! $this->compact): ?>
         <?php endforeach ?>
         </tbody>
     </table>
+<?php if ($this->compact && $events->hasMore()): ?>
+    <?= $this->qlink(
+        $this->translate('Show More'),
+        $this->url()->without(array('view', 'limit')),
+        null,
+        array(
+            'data-base-target'  => '_next',
+            'class'             => 'action-link'
+        )
+    ) ?>
+<?php endif; ?>
 </div>

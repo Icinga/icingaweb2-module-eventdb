@@ -12,6 +12,12 @@ use Icinga\Web\Navigation\NavigationItem;
 
 class EventdbActionHookTest extends BaseTestCase
 {
+    public function setUp()
+    {
+        parent::setUp();
+        EventdbActionHook::wantCache(false);
+    }
+
     public function testHostWithoutVarsAndNoConfig()
     {
         $this->setupConfiguration(null, null, null);
