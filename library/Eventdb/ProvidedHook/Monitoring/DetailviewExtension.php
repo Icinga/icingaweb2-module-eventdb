@@ -57,7 +57,9 @@ class DetailviewExtension extends DetailviewExtensionHook
         $htm .= sprintf(
             '<div class="container" data-last-update="-1" data-icinga-url="%s" data-icinga-refresh="60">',
             $url->with(array(
-                'view' => 'compact',
+                'sort'  => 'priority',
+                'dir'   => 'asc',
+                'view'  => 'compact',
                 'limit' => 5,
             ))->addFilter($customFilter)
         );
