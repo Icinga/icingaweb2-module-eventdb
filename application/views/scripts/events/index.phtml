@@ -29,7 +29,7 @@
 </div>
 <?php endif ?>
 <div class="content">
-<?php if (! $events->hasResult()): ?>
+<?php /** @var \Icinga\Repository\RepositoryQuery $events */if (! $events->hasResult()): ?>
     <p><?= $this->translate('No events recorded yet.') ?></p>
 </div>
 <?php return; endif ?>
@@ -78,4 +78,15 @@
         <?php endforeach ?>
         </tbody>
     </table>
+<?php if ($this->compact && $events->hasMore()): ?>
+    <?= $this->qlink(
+        $this->translate('Show More'),
+        $this->url()->without(array('view', 'limit')),
+        null,
+        array(
+            'data-base-target'  => '_next',
+            'class'             => 'action-link'
+        )
+    ) ?>
+<?php endif; ?>
 </div>
