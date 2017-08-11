@@ -1,10 +1,25 @@
 # EventDB Module for Icinga Web 2
 
+[![Build Status](https://travis-ci.org/Icinga/icingaweb2-module-eventdb.svg?branch=master)](https://travis-ci.org/Icinga/icingaweb2-module-eventdb)
+[![Github Tag](https://img.shields.io/github/tag/Icinga/icingaweb2-module-eventdb.svg)](https://github.com/Icinga/icingaweb2-module-eventdb)
+
+![Icinga Logo](https://www.icinga.com/wp-content/uploads/2014/06/icinga_logo.png)
+
+* [About](#about)
+* [Requirements](#requirements)
+* [Getting Started](#getting-started)
+* [Documentation](#documentation)
+* [License](#license)
+
 ## About
 
 With the EventDB Module you can browse, comment and acknowledge events collected
 by [EventDB](https://git.netways.org/eventdb/eventdb) easily in
 [Icinga Web 2](https://www.icinga.org/products/icinga-web-2/).
+
+![screenshot](doc/screenshots/overview.png)
+
+Also see [Screenshots](doc/10-Screenshots.md) in documentation.
 
 ## Requirements
 
@@ -19,7 +34,9 @@ to set up the essentials.
 ## Documentation
 
 * [Configuration](doc/02-Configuration.md)
+* [Custom variables](doc/03-CustomVars.md)
 * [Security](doc/09-Security.md)
+* [Screenshots](doc/10-Screenshots.md)
 
 ## License
 
