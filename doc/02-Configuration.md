@@ -41,3 +41,13 @@ Also see [Custom Variables](03-CustomVars.md) documentation.
 
 There are options to always show actions on host or service, even if the custom variable
 is not set.
+
+### Detail view
+
+Icingaweb adds a new feature in 2.5.0 to allow extra content inside the detail views
+of hosts and services.
+
+By default the view filters for not acknowledged events, and shows you the last, most
+critical events first. One can jump to events list or a detail view immediately.
+
+Custom filters can be added in the config area, also the view can be disabled there.
