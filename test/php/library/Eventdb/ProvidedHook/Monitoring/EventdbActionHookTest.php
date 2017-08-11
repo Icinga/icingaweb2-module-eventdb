@@ -88,6 +88,21 @@ class EventdbActionHookTest extends BaseTestCase
     {
         $this->setupConfiguration();
 
+        $nav = EventdbActionHook::getActions($this->buildHost("program=test3"));
+
+        $items = $nav->getItems();
+        $this->assertCount(2, $items);
+
+        /** @var NavigationItem $navObj */
+        $navObj = current($items);
+
+        $this->assertEquals("program=test3&host_name=testhost", $navObj->getUrl()->getQueryString());
+    }
+
+    public function testHostWithFilterThatFiltersHost()
+    {
+        $this->setupConfiguration();
+
         $nav = EventdbActionHook::getActions($this->buildHost("host_name=test3&program=test3"));
 
         $items = $nav->getItems();

@@ -41,10 +41,7 @@ define host {
 }
 ```
 
-Some other filter examples:
-
-
-
+**Note:** A filter by `host_name` will always be added, unless you have `host_name` as part of your filter.
 
 ## Legacy filters
 

@@ -81,6 +81,10 @@ class EventdbActionHook
             } else {
                 try {
                     $customFilter = Filter::fromQueryString($edb_filter);
+
+                    if (! in_array('host_name', $customFilter->listFilteredColumns())) {
+                        $customFilter = $customFilter->andFilter(Filter::expression('host_name', '=', $object->host_name));
+                    }
                 } catch (FilterParseException $e) {
                     Logger::warning('Could not parse custom EventDB filter: %s (%s)', $edb_filter, $e->getMessage());
                 }
