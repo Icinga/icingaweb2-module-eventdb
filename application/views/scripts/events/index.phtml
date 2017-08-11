@@ -1,5 +1,4 @@
-<?php
-if (! $this->compact): ?>
+<?php if (! $this->compact): ?>
 <div class="controls">
     <?= $this->tabs ?>
     <?php
@@ -39,6 +38,7 @@ if (! $this->compact): ?>
            data-icinga-multiselect-url="<?= $this->href('eventdb/events/details') ?>"
            data-icinga-multiselect-controllers="<?= $this->href('eventdb/events') ?>"
            data-icinga-multiselect-data="id">
+        <?php if (! $this->compact): ?>
         <thead>
             <tr>
                 <th></th>
@@ -48,6 +48,7 @@ if (! $this->compact): ?>
             <?php endforeach ?>
             </tr>
         </thead>
+        <?php endif; ?>
         <tbody>
         <?php
         foreach ($events as $eventData):
