@@ -9,7 +9,6 @@ use Icinga\Authentication\Auth;
 use Icinga\Data\Filter\Filter;
 use Icinga\Data\Filter\FilterParseException;
 use Icinga\Exception\InvalidPropertyException;
-use Icinga\Exception\NotImplementedError;
 use Icinga\Module\Eventdb\Data\LegacyFilterParser;
 use Icinga\Module\Monitoring\Object\Host;
 use Icinga\Module\Monitoring\Object\MonitoredObject;
@@ -20,16 +19,29 @@ use Icinga\Web\UrlParams;
 
 class EventdbActionHook
 {
+    protected static $cachedNav = array();
+
     /**
-     * @param MonitoredObject $object
+     * @param MonitoredObject $object    Host or Service to render for
+     * @param bool            $no_cache  Only for testing - to avoid caching
      *
      * @return array|Navigation
-     * @throws NotImplementedError
      */
-    public static function getActions(MonitoredObject $object)
+    public static function getActions(MonitoredObject $object, $no_cache = true)
     {
         if (! Auth::getInstance()->hasPermission('eventdb/events')) {
             return array();
+        }
+
+        $type = $object->getType();
+        $objectKey = sprintf('%!%', $type, $object->host_name);
+        if ($type === 'service') {
+            $objectKey .= '!' . $object->service_description;
+        }
+
+        // check cache if the buttons already have been rendered
+        if (! $no_cache && array_key_exists($objectKey, self::$cachedNav)) {
+            return self::$cachedNav[$objectKey];
         }
 
         $nav = new Navigation();
@@ -80,7 +92,7 @@ class EventdbActionHook
             $nav->addItem(
                 'events_filtered',
                 array(
-                    'label'    => mt('eventdb', 'EventDB') . ': ' . mt('eventdb', 'Filtered events'),
+                    'label'    => mt('eventdb', 'Filtered events'),
                     'url'      => Url::fromPath('eventdb/events')->setParams($params),
                     'icon'     => 'tasks',
                     'class'    => 'action-link',
@@ -97,7 +109,7 @@ class EventdbActionHook
             $nav->addItem(
                 'events',
                 array(
-                    'label'    => mt('eventdb', 'EventDB') . ': ' . mt('eventdb', 'All events for host'),
+                    'label'    => mt('eventdb', 'All events for host'),
                     'url'      => Url::fromPath(
                         'eventdb/events',
                         array(
@@ -111,6 +123,6 @@ class EventdbActionHook
             );
         }
 
-        return $nav;
+        return self::$cachedNav[$objectKey] = $nav;
     }
 }
