@@ -29,6 +29,7 @@ if [ ! -d "${icingaweb_path}" ]; then
 fi
 ln -svf "${icingaweb_path}"/library/Icinga
 ln -svf "${icingaweb_path}"/library/vendor/Zend
+ln -svf "${icingaweb_path}" icingaweb2
 
 # phpunit
 phpunit_path="phpunit-${PHPUNIT_VERSION}"

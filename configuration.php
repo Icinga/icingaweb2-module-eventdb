@@ -11,6 +11,11 @@ $this->provideConfigTab('backend', array(
     'label' => $this->translate('Backend'),
     'url' => 'config'
 ));
+$this->provideConfigTab('monitoring', array(
+    'title' => $this->translate('Configure integration into the monitoring module'),
+    'label' => $this->translate('Monitoring'),
+    'url' => 'config/monitoring'
+));
 
 $this->providePermission(
     'eventdb/events',
