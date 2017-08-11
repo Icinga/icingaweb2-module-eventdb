@@ -11,61 +11,32 @@ by [EventDB](https://git.netways.org/eventdb/eventdb) easily in
 * Icinga Web 2
 * A database with events collected by EventDB
 
-## Configuration
+## Getting started
 
-To let the module know where the events are stored you have to create an SQL
-database resource with a database with events collected by EventDB.
-Once you have installed and enabled the module, go to the EventDB Module's
-configuration and select the database resource as backend.
+Install and enable the module, then go to [Configuration](doc/02-Configuration.md)
+to set up the essentials.
 
-## Monitoring Integration
+## Documentation
 
-The EventDB module integrates into Icinga Web 2's monitoring module by default,
-offering action links in host and service detail views.
+* [Configuration](doc/02-Configuration.md)
+* [Security](doc/09-Security.md)
 
-### Default actions
+## License
 
-By default, every host and services shows an action link to the event list, 
-filtered by host name.
+    Copyright (C) 2016-2017 Icinga Development Team
+                  2016-2017 Eric Lippmann <eric.lippmann@icinga.com>
+                  2017      Markus Frosch <markus.frosch@icinga.com>
 
-### Custom Variable
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or
+    (at your option) any later version.
 
-You can configure a custom variable that enables the integration selectively.
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
 
-* `_edb` or `vars.edb` will enable the actions only on objects that have the custom var
-* `_edb_filter` or `vars.edb_filter` allows you to pre-filter the linked events
-
-The name of the customvar (`edb`) needs to be configured in the config area of the module.
-
-### Filters (TODO)
-
-### Always show actions
-
-There are options to always show actions on host or service, even if the custom variable
-is not set.
-
-## Security
-
-The EventDB Module provides permissions and restrictions as described below.
-
-### Permissions
-
-| Name             | Description |
-| ---------------- | ----------- |
-| eventdb/events   | Allow to view events |
-| eventdb/comments | Allow to view comments |
-| eventdb/interact | Allow to acknowledge and comment events |
-
-### Restrictions
-
-| Name                    | Description |
-| ----------------------- | ----------- |
-| eventdb/events/filter   | Restrict views to the events that match the filter |
-| eventdb/comments/filter | Restrict views to the comments that match the filter |
-
-### Examples
-
-| eventdb/events/filter      | Description |
-| -------------------------- | ----------- |
-| type!=syslog               | Hide the Syslog events from a role |
-| type=syslog&program=icinga | Show only Icinga-related Syslog events to a role |
+    You should have received a copy of the GNU General Public License along
+    with this program; if not, write to the Free Software Foundation, Inc.,
+    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
