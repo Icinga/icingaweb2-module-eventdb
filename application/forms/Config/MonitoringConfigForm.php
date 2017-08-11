@@ -49,5 +49,24 @@ class MonitoringConfigForm extends ConfigForm
                 'label'       => $this->translate('Always enable for services')
             )
         );
+
+        $this->addElement(
+            'checkbox',
+            'monitoring_detailview_disable',
+            array(
+                'description' => $this->translate('Disable the detail view inside the monitoring module'),
+                'label'       => $this->translate('Disable the detail view')
+            )
+        );
+
+        $this->addElement(
+            'text',
+            'monitoring_detailview_filter',
+            array(
+                'description' => $this->translate('Filter events in the detail view area inside the monitoring module'),
+                'label'       => $this->translate('Filter the detail view'),
+                'value'       => 'ack=0', // Also see DetailviewExtension
+            )
+        );
     }
 }
