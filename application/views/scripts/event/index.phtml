@@ -20,8 +20,8 @@ if (! $this->compact): ?>
                 <div class="priority-label"><?= strtoupper($event->getPriority()) ?></div>
                 <div class="event-meta"><span class="timeago" title="<?= $event->created ?>"><?= $this->timeAgo(strtotime($event->created)) ?></span></div>
             </td>
-            <td rowspan="2" class="icon-col" title="<?= $event->getType() ?>">
-                <?= $this->icon($event->getTypeIcon()) ?>
+            <td rowspan="2" class="icon-col">
+                <?= $this->icon($event->getTypeIcon(), $event->getType()) ?>
                 <?php if ($event->ack) { echo $this->icon('ok', $this->translate('Acknowledged')); } ?>
             </td>
             <?= $this->column('host_name', $event, array('selectable')) ?>
@@ -33,7 +33,9 @@ if (! $this->compact): ?>
     <h2><?= $this->translate('Details') ?></h2>
     <table class="name-value-table">
         <?php
-        $event = $this->event($this->eventData); foreach ($displayColumns as $column):
+        $event = $this->event($this->eventData);
+        $displayColumns = array_merge(array('program', 'message', 'facility'), $additionalColumns);
+        foreach ($displayColumns as $column):
             if ($column === 'message') continue;
         ?>
             <tr>

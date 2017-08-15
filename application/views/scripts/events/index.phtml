@@ -32,7 +32,7 @@
 <?php /** @var \Icinga\Repository\RepositoryQuery $events */if (! $events->hasResult()): ?>
     <p><?= $this->translate('No events recorded yet.') ?></p>
 </div>
-<?php return; endif ?>
+<?php return; endif; $displayColumns = array_merge(array('host_name', 'program', 'message', 'facility'), $additionalColumns); ?>
     <table class="common-table table-row-selectable multiselect table-responsive events-table"
            data-base-target="_next"
            data-icinga-multiselect-url="<?= $this->href('eventdb/events/details') ?>"
@@ -67,8 +67,8 @@
                     <div class="priority-label"><?= strtoupper($event->getPriority()) ?></div>
                     <div class="event-meta"><a href="<?= $url ?>" class="timeago" title="<?= $created ?>"><?= $this->timeAgo($createdTs) ?></a></div>
                 </td>
-                <td class="icon-col" title="<?= $event->getType() ?>">
-                    <?= $this->icon($event->getTypeIcon()) ?>
+                <td class="icon-col">
+                    <?= $this->icon($event->getTypeIcon(), $event->getType()) ?>
                     <?php if ($event->ack) { echo $this->icon('ok', $this->translate('Acknowledged')); } ?>
                 </td>
             <?php foreach ($displayColumns as $displayColumn): ?>

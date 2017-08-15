@@ -21,33 +21,21 @@ class EventController extends EventdbController
             'url'       => Url::fromRequest()
         ));
 
-        $staticColumns = array(
-            'id',
-            'created',
-            'type',
-            'ack',
-            'priority',
-            'host_name',
-            'host_address'
-        );
-
         $columnConfig = $this->Config('columns');
-        if ($columnConfig->isEmpty()) {
-            $displayColumns = array(
-                'message',
-                'program',
-                'facility'
-            );
+        if (! $columnConfig->isEmpty()) {
+            $additionalColumns = $columnConfig->keys();
         } else {
-            $displayColumns = $columnConfig->keys();
+            $additionalColumns = array();
         }
-
-        $columns = array_merge($staticColumns, array_diff($displayColumns, $staticColumns));
 
         $event = $this->getDb()
             ->select()
-            ->from('event', $columns)
-            ->where('id', $eventId);
+            ->from('event');
+
+        $columns = array_merge($event->getColumns(), $additionalColumns);
+
+        $event->from('event', $columns);
+        $event->where('id', $eventId);
 
         $event->applyFilter(Filter::matchAny(array_map(
             '\Icinga\Data\Filter\Filter::fromQueryString',
@@ -102,7 +90,7 @@ class EventController extends EventdbController
 
         $this->view->columnConfig = $columnConfig;
         $this->view->eventData = $event->fetchRow();
-        $this->view->displayColumns = $displayColumns;
+        $this->view->additionalColumns = $additionalColumns;
     }
 
     /**
