@@ -70,6 +70,7 @@
                 <td class="icon-col">
                     <?= $this->icon($event->getTypeIcon(), $event->getType()) ?>
                     <?php if ($event->ack) { echo $this->icon('ok', $this->translate('Acknowledged')); } ?>
+                    <?php if ($event->group_autoclear) { echo $this->icon('reschedule', $this->translate('Auto-Clear')); } ?>
                 </td>
             <?php foreach ($displayColumns as $displayColumn): ?>
                 <?= $this->column($displayColumn, $event) ?>

@@ -5,6 +5,7 @@ namespace Icinga\Module\Eventdb\Controllers;
 
 use Icinga\Data\Filter\Filter;
 use Icinga\Exception\NotFoundError;
+use Icinga\Module\Eventdb\Event;
 use Icinga\Module\Eventdb\EventdbController;
 use Icinga\Module\Eventdb\Forms\Event\EventCommentForm;
 use Icinga\Web\Url;
@@ -42,6 +43,32 @@ class EventController extends EventdbController
             $this->getRestrictions('eventdb/events/filter', 'eventdb/events')
         )));
 
+        $eventData = $event->fetchRow();
+        if (! $eventData) {
+            throw new NotFoundError('Could not find event with id %d', $eventId);
+        }
+
+        $eventObj = Event::fromData($eventData);
+
+        $groupedEvents = null;
+        if ($this->getDb()->hasCorrelatorExtensions()) {
+            $group_leader = (int) $eventObj->group_leader;
+            if ($group_leader > 0) {
+                // redirect to group leader
+                $this->redirectNow(Url::fromPath('eventdb/event', array('id' => $group_leader)));
+            }
+
+            if ($group_leader === -1) {
+                // load grouped events, if any
+                $groupedEvents = $this->getDb()
+                    ->select()
+                    ->from('event')
+                    ->where('group_leader', $eventObj->id)
+                    ->order('ack', 'ASC')
+                    ->order('created', 'DESC');
+            }
+        }
+
         $comments = null;
         $commentForm = null;
         if ($this->hasPermission('eventdb/comments')) {
@@ -63,10 +90,7 @@ class EventController extends EventdbController
                 $commentForm
                     ->setDb($this->getDb())
                     ->setFilter(Filter::expression('id', '=', $eventId));
-                $this->view->commentForm = $commentForm;
             }
-
-            $this->view->comments = $comments;
         }
 
         $format = $this->params->get('format');
@@ -81,6 +105,12 @@ class EventController extends EventdbController
                     . '</pre>';
             }
 
+            if ($groupedEvents !== null) {
+                echo '<pre>'
+                    . htmlspecialchars(wordwrap($groupedEvents))
+                    . '</pre>';
+            }
+
             exit;
         }
 
@@ -88,9 +118,12 @@ class EventController extends EventdbController
             $commentForm->handleRequest();
         }
 
+        $this->view->event = $eventObj;
         $this->view->columnConfig = $columnConfig;
-        $this->view->eventData = $event->fetchRow();
         $this->view->additionalColumns = $additionalColumns;
+        $this->view->groupedEvents = $groupedEvents;
+        $this->view->comments = $comments;
+        $this->view->commentForm = $commentForm;
     }
 
     /**

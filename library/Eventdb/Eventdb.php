@@ -5,10 +5,12 @@ namespace Icinga\Module\Eventdb;
 
 use Icinga\Application\Config;
 use Icinga\Data\ConfigObject;
+use Icinga\Data\Filter\Filter;
+use Icinga\Data\Filter\FilterExpression;
 use Icinga\Data\ResourceFactory;
 use Icinga\Exception\ConfigurationError;
 use Icinga\Repository\DbRepository;
-use Icinga\Util\StringHelper;
+use Icinga\Repository\RepositoryQuery;
 
 class Eventdb extends DbRepository
 {
@@ -21,8 +23,8 @@ class Eventdb extends DbRepository
      * {@inheritdoc}
      */
     protected $tableAliases = array(
-        'comment'   => 'c',
-        'event'     => 'e'
+        'comment' => 'c',
+        'event'   => 'e',
     );
 
     /**
@@ -31,7 +33,7 @@ class Eventdb extends DbRepository
      * @var array
      */
     protected static $defaultQueryColumns = array(
-        'event' => array(
+        'event'   => array(
             'id',
             'host_name',
             'host_address',
@@ -44,8 +46,6 @@ class Eventdb extends DbRepository
             'ack',
             'created',
             'modified',
-            'active',
-            'flags'
         ),
         'comment' => array(
             'id',
@@ -58,6 +58,48 @@ class Eventdb extends DbRepository
         )
     );
 
+    protected static $edbcQueryColumns = array(
+        'event' => array(
+            'group_active',
+            'group_id',
+            'group_count',
+            'group_leader',
+            'group_autoclear',
+            'flags',
+            'alternative_message'
+        )
+    );
+
+    /** @var bool */
+    protected $hasCorrelatorExtensions = null;
+
+    /**
+     * Checks if Event repository has EDBC columns
+     *
+     * @return bool
+     */
+    public function hasCorrelatorExtensions()
+    {
+        if ($this->hasCorrelatorExtensions === null) {
+            $dba = $this->getDataSource()->getDbAdapter();
+            $result = $dba->fetchRow("SHOW COLUMNS FROM `event` LIKE 'group_leader'");
+
+            $this->hasCorrelatorExtensions = ! ! $result;
+        }
+        return $this->hasCorrelatorExtensions;
+    }
+
+    public function filterGroups(RepositoryQuery $query)
+    {
+        if ($this->hasCorrelatorExtensions()) {
+            $query->addFilter(Filter::matchAny(
+                Filter::expression('group_leader', '=', -1),
+                new FilterExpression('group_leader', 'IS', new \Zend_Db_Expr('NULL'))
+            ));
+        }
+        return $this;
+    }
+
     /**
      * {@inheritdoc}
      */
@@ -65,6 +107,15 @@ class Eventdb extends DbRepository
     {
         $additionalColumns = Config::module('eventdb', 'columns')->keys();
         $queryColumns = static::$defaultQueryColumns;
+        if ($this->hasCorrelatorExtensions()) {
+            foreach (static::$edbcQueryColumns as $table => $fields) {
+                if (array_key_exists($table, $queryColumns)) {
+                    $queryColumns[$table] = array_merge($queryColumns[$table], $fields);
+                } else {
+                    $queryColumns[$table] = $fields;
+                }
+            }
+        }
         if ($additionalColumns !== null) {
             $eventColumns = $queryColumns['event'];
             $queryColumns['event'] = array_merge($eventColumns, array_diff($additionalColumns, $eventColumns));

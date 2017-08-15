@@ -49,6 +49,8 @@ class EventsController extends EventdbController
             $this->getRestrictions('eventdb/events/filter', 'eventdb/events')
         )));
 
+        $this->getDb()->filterGroups($events);
+
         $this->setupPaginationControl($events);
 
         $this->setupFilterControl(
@@ -122,6 +124,7 @@ class EventsController extends EventdbController
             ->select()
             ->from('event');
 
+        $this->getDb()->filterGroups($events);
 
         $filter = Filter::fromQueryString($this->getRequest()->getUrl()->getQueryString());
         $events->applyFilter($filter);

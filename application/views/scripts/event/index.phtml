@@ -1,6 +1,8 @@
 <?php
 /** @var \Icinga\Module\Eventdb\Event $event */
-$event = $this->event($this->eventData);
+/** @var array $additionalColumns */
+/** @var \Icinga\Repository\RepositoryQuery $comments */
+/** @var \Icinga\Repository\RepositoryQuery $groupedEvents */
 
 $commentIcons = array(
     $this->icon('comment', $this->translate('Comment')),
@@ -23,6 +25,7 @@ if (! $this->compact): ?>
             <td rowspan="2" class="icon-col">
                 <?= $this->icon($event->getTypeIcon(), $event->getType()) ?>
                 <?php if ($event->ack) { echo $this->icon('ok', $this->translate('Acknowledged')); } ?>
+                <?php if ($event->group_autoclear) { echo $this->icon('reschedule', $this->translate('Auto-Clear')); } ?>
             </td>
             <?= $this->column('host_name', $event, array('selectable')) ?>
         </tr>
@@ -33,7 +36,6 @@ if (! $this->compact): ?>
     <h2><?= $this->translate('Details') ?></h2>
     <table class="name-value-table">
         <?php
-        $event = $this->event($this->eventData);
         $displayColumns = array_merge(array('program', 'message', 'facility'), $additionalColumns);
         foreach ($displayColumns as $column):
             if ($column === 'message') continue;
@@ -108,9 +110,16 @@ if (! $this->compact): ?>
 
     <?php if (isset($commentForm)): ?>
     <h2><?= $this->translate('Add comment / acknowledge') ?></h2>
+    <?php if ($event->group_autoclear): ?>
+    <div class="warning">
+        <?= $this->translate('This event is set to auto-clear.') ?>
+        <?= $this->translate('Please only acknowledge manually, if you know what that means.') ?>
+    </div>
+    <?php endif; ?>
     <div class="comment-form"><?= $commentForm ?></div>
     <?php endif ?>
-    <h2>Comments</h2>
+
+    <h2><?= $this->translate('Comments') ?></h2>
     <?php if (! $comments->hasResult()): ?>
     <p><?= $this->translate('No comments recorded for this event yet.') ?></p>
     <?php else: ?>
@@ -127,5 +136,33 @@ if (! $this->compact): ?>
         </tbody>
     </table>
     <?php endif; ?>
+
+    <?php if ($groupedEvents !== null && $groupedEvents->hasResult()): ?>
+    <h2><?= $this->translate('Grouped Events') ?></h2>
+    <table class="common-table events-table" data-base-target="_next">
+        <tbody>
+        <?php foreach ($groupedEvents as $groupedEventData):
+            /** @var \Icinga\Module\Eventdb\Event $groupedEvent */
+            $groupedEvent = $this->event($groupedEventData);
+        ?>
+            <tr>
+                <td class="priority-col <?= $groupedEvent->getPriority() ?> <?= $groupedEvent->ack ? 'ack' : '' ?>">
+                    <div class="priority-label"><?= strtoupper($groupedEvent->getPriority()) ?></div>
+                    <div class="event-meta"><span class="timeago" title="<?= $groupedEvent->created ?>"><?= $this->timeAgo(strtotime($groupedEvent->created)) ?></span></div>
+                </td>
+                <td class="icon-col">
+                    <?= $this->icon($groupedEvent->getTypeIcon(), $groupedEvent->getType()) ?>
+                    <?php if ($groupedEvent->ack) { echo $this->icon('ok', $this->translate('Acknowledged')); } ?>
+                    <?php if ($groupedEvent->group_autoclear) { $autoClear = true; echo $this->icon('reschedule', $this->translate('Auto-Clear')); } ?>
+                </td>
+                <?= $this->column('host_name', $groupedEvent) ?>
+                <?= $this->column('program', $groupedEvent) ?>
+                <?= $this->column('message', $groupedEvent) ?>
+            </tr>
+        <?php endforeach ?>
+        </tbody>
+    </table>
+    <?php endif; ?>
+
 </div>
 
