@@ -5,6 +5,7 @@ namespace Icinga\Module\Eventdb\Controllers;
 
 use Icinga\Data\Filter\Filter;
 use Icinga\Exception\NotFoundError;
+use Icinga\Module\Eventdb\Event;
 use Icinga\Module\Eventdb\EventdbController;
 use Icinga\Module\Eventdb\Forms\Event\EventCommentForm;
 use Icinga\Web\Url;
@@ -21,38 +22,52 @@ class EventController extends EventdbController
             'url'       => Url::fromRequest()
         ));
 
-        $staticColumns = array(
-            'id',
-            'created',
-            'type',
-            'ack',
-            'priority',
-            'host_name',
-            'host_address'
-        );
-
         $columnConfig = $this->Config('columns');
-        if ($columnConfig->isEmpty()) {
-            $displayColumns = array(
-                'message',
-                'program',
-                'facility'
-            );
+        if (! $columnConfig->isEmpty()) {
+            $additionalColumns = $columnConfig->keys();
         } else {
-            $displayColumns = $columnConfig->keys();
+            $additionalColumns = array();
         }
-
-        $columns = array_merge($staticColumns, array_diff($displayColumns, $staticColumns));
 
         $event = $this->getDb()
             ->select()
-            ->from('event', $columns)
-            ->where('id', $eventId);
+            ->from('event');
+
+        $columns = array_merge($event->getColumns(), $additionalColumns);
+
+        $event->from('event', $columns);
+        $event->where('id', $eventId);
 
         $event->applyFilter(Filter::matchAny(array_map(
             '\Icinga\Data\Filter\Filter::fromQueryString',
             $this->getRestrictions('eventdb/events/filter', 'eventdb/events')
         )));
+
+        $eventData = $event->fetchRow();
+        if (! $eventData) {
+            throw new NotFoundError('Could not find event with id %d', $eventId);
+        }
+
+        $eventObj = Event::fromData($eventData);
+
+        $groupedEvents = null;
+        if ($this->getDb()->hasCorrelatorExtensions()) {
+            $group_leader = (int) $eventObj->group_leader;
+            if ($group_leader > 0) {
+                // redirect to group leader
+                $this->redirectNow(Url::fromPath('eventdb/event', array('id' => $group_leader)));
+            }
+
+            if ($group_leader === -1) {
+                // load grouped events, if any
+                $groupedEvents = $this->getDb()
+                    ->select()
+                    ->from('event')
+                    ->where('group_leader', $eventObj->id)
+                    ->order('ack', 'ASC')
+                    ->order('created', 'DESC');
+            }
+        }
 
         $comments = null;
         $commentForm = null;
@@ -75,10 +90,7 @@ class EventController extends EventdbController
                 $commentForm
                     ->setDb($this->getDb())
                     ->setFilter(Filter::expression('id', '=', $eventId));
-                $this->view->commentForm = $commentForm;
             }
-
-            $this->view->comments = $comments;
         }
 
         $format = $this->params->get('format');
@@ -93,6 +105,12 @@ class EventController extends EventdbController
                     . '</pre>';
             }
 
+            if ($groupedEvents !== null) {
+                echo '<pre>'
+                    . htmlspecialchars(wordwrap($groupedEvents))
+                    . '</pre>';
+            }
+
             exit;
         }
 
@@ -100,9 +118,12 @@ class EventController extends EventdbController
             $commentForm->handleRequest();
         }
 
+        $this->view->event = $eventObj;
         $this->view->columnConfig = $columnConfig;
-        $this->view->eventData = $event->fetchRow();
-        $this->view->displayColumns = $displayColumns;
+        $this->view->additionalColumns = $additionalColumns;
+        $this->view->groupedEvents = $groupedEvents;
+        $this->view->comments = $comments;
+        $this->view->commentForm = $commentForm;
     }
 
     /**

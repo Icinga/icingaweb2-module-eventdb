@@ -24,62 +24,47 @@ class EventsController extends EventdbController
         $this->assertPermission('eventdb/events');
 
         $this->getTabs()->add('events', array(
-            'active'    => true,
-            'title'     => $this->translate('Events'),
-            'url'       => Url::fromRequest()
+            'active' => true,
+            'title'  => $this->translate('Events'),
+            'url'    => Url::fromRequest()
         ));
 
-        $staticQueryColumns = array(
-            'ack',
-            'id',
-            'priority',
-            'type',
-            'host_name',
-            'host_address',
-            'created'
-        );
-
-        if (! $this->params->has('columns')) {
-            $displayColumns = $this->Config('columns');
-            if ($displayColumns->isEmpty()) {
-                $displayColumns = array(
-                    'host_name',
-                    'message',
-                    'program',
-                    'facility'
-                );
-            } else {
-                $displayColumns = $displayColumns->keys();
-            }
+        $columnConfig = $this->Config('columns');
+        if ($this->params->has('columns')) {
+            $additionalColumns = StringHelper::trimSplit($this->params->get('columns'));
+        } elseif (! $columnConfig->isEmpty()) {
+            $additionalColumns = $columnConfig->keys();
         } else {
-            $displayColumns = StringHelper::trimSplit($this->params->get('columns'));
+            $additionalColumns = array();
         }
 
-        $queryColumns = array_merge($staticQueryColumns, array_diff($displayColumns, $staticQueryColumns));
+        $events = $this->getDb()->select()
+            ->from('event');
 
-        $events = $this->getDb()
-            ->select()
-            ->from('event', $queryColumns);
+        $columns = array_merge($events->getColumns(), $additionalColumns);
+        $events->columns($columns);
 
         $events->applyFilter(Filter::matchAny(array_map(
             '\Icinga\Data\Filter\Filter::fromQueryString',
             $this->getRestrictions('eventdb/events/filter', 'eventdb/events')
         )));
 
+        $this->getDb()->filterGroups($events);
+
         $this->setupPaginationControl($events);
 
         $this->setupFilterControl(
             $events,
             array(
-                'host_name'     => $this->translate('Host'),
-                'host_address'  => $this->translate('Host Address'),
-                'type'          => $this->translate('Type'),
-                'program'       => $this->translate('Program'),
-                'facility'      => $this->translate('Facility'),
-                'priority'      => $this->translate('Priority'),
-                'message'       => $this->translate('Message'),
-                'ack'           => $this->translate('Acknowledged'),
-                'created'       => $this->translate('Created')
+                'host_name'    => $this->translate('Host'),
+                'host_address' => $this->translate('Host Address'),
+                'type'         => $this->translate('Type'),
+                'program'      => $this->translate('Program'),
+                'facility'     => $this->translate('Facility'),
+                'priority'     => $this->translate('Priority'),
+                'message'      => $this->translate('Message'),
+                'ack'          => $this->translate('Acknowledged'),
+                'created'      => $this->translate('Created')
             ),
             array('host_name'),
             array('columns', 'format')
@@ -89,15 +74,15 @@ class EventsController extends EventdbController
 
         $this->setupSortControl(
             array(
-                'host_name'     => $this->translate('Host'),
-                'host_address'  => $this->translate('Host Address'),
-                'type'          => $this->translate('Type'),
-                'program'       => $this->translate('Program'),
-                'facility'      => $this->translate('Facility'),
-                'priority'      => $this->translate('Priority'),
-                'message'       => $this->translate('Message'),
-                'ack'           => $this->translate('Acknowledged'),
-                'created'       => $this->translate('Created')
+                'host_name'    => $this->translate('Host'),
+                'host_address' => $this->translate('Host Address'),
+                'type'         => $this->translate('Type'),
+                'program'      => $this->translate('Program'),
+                'facility'     => $this->translate('Facility'),
+                'priority'     => $this->translate('Priority'),
+                'message'      => $this->translate('Message'),
+                'ack'          => $this->translate('Acknowledged'),
+                'created'      => $this->translate('Created')
             ),
             $events,
             array('created' => 'desc')
@@ -121,7 +106,7 @@ class EventsController extends EventdbController
 
         $this->view->ackFilterForm = $ackFilterForm;
         $this->view->columnConfig = $this->Config('columns');
-        $this->view->displayColumns = $displayColumns;
+        $this->view->additionalColumns = $additionalColumns;
         $this->view->events = $events;
         $this->view->severityFilterForm = $severityFilterForm;
     }
@@ -135,22 +120,11 @@ class EventsController extends EventdbController
             'url'   => Url::fromRequest()
         ))->activate('events');
 
-        $columns = array(
-            'ack',
-            'id',
-            'priority',
-            'type',
-            'host_name',
-            'host_address',
-            'created',
-            'message',
-            'program',
-            'facility'
-        );
-
         $events = $this->getDb()
             ->select()
-            ->from('event', $columns);
+            ->from('event');
+
+        $this->getDb()->filterGroups($events);
 
         $filter = Filter::fromQueryString($this->getRequest()->getUrl()->getQueryString());
         $events->applyFilter($filter);

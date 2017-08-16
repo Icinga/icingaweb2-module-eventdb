@@ -59,7 +59,6 @@ class EventCommentForm extends Form
      */
     public function createElements(array $formData)
     {
-        $view = $this->getView();
         $this->addElement(
             'select',
             'type',
@@ -107,9 +106,13 @@ class EventCommentForm extends Form
                 ));
 
                 if ($type !== '0') {
+                    $ackFilter = Filter::expression('id', '=', $event->id);
+                    if ($this->db->hasCorrelatorExtensions()) {
+                        $ackFilter = Filter::matchAny($ackFilter, Filter::where('group_leader', $event->id));
+                    }
                     $this->db->update('event', array(
                         'ack' => $type === '1' ? 1 : 0
-                    ), Filter::where('id', $event->id));
+                    ), $ackFilter);
                 }
             }
             $dbAdapter->commit();

@@ -1,11 +1,15 @@
-<?php if (! $this->compact): ?>
+<?php
+/** @var array $events */
+
+if (! $this->compact):
+?>
 <div class="controls">
     <?= $this->tabs ?>
 </div>
 <?php endif ?>
 <div class="content">
     <table class="common-table event-summary-table table-row-selectable" data-base-target="_next">
-    <?php foreach($events as $eventData):
+    <?php $autoClear = false; foreach($events as $eventData):
         /** @var \Icinga\Module\Eventdb\Event $event */
         $event = $this->event($eventData);
         $url = $this->url('eventdb/event', array('id' => $event->id));
@@ -15,9 +19,10 @@
                 <div class="priority-label"><?= strtoupper($event->getPriority()) ?></div>
                 <div class="event-meta"><span class="timeago" title="<?= $event->created ?>"><?= $this->timeAgo(strtotime($event->created)) ?></span></div>
             </td>
-            <td class="icon-col" title="<?= $event->getType() ?>">
-                <?= $this->icon($event->getTypeIcon()) ?>
+            <td class="icon-col">
+                <?= $this->icon($event->getTypeIcon(), $event->getType()) ?>
                 <?php if ($event->ack) { echo $this->icon('ok', $this->translate('Acknowledged')); } ?>
+                <?php if ($event->group_autoclear) { $autoClear = true; echo $this->icon('reschedule', $this->translate('Auto-Clear')); } ?>
             </td>
             <?= $this->column('host_name', $event) ?>
             <?= $this->column('program', $event) ?>
@@ -27,6 +32,12 @@
     </table>
     <?php if (isset($commentForm)): ?>
         <h3><?= $this->translate('Add comment / acknowledge') ?></h3>
+        <?php if ($autoClear): ?>
+            <div class="warning">
+                <?= $this->translate('At least one event is set to auto-clear.') ?>
+                <?= $this->translate('Please only acknowledge manually, if you know what that means.') ?>
+            </div>
+        <?php endif; ?>
         <div class="comment-form"><?= $commentForm ?></div>
     <?php endif ?>
 </div>
