@@ -1,3 +1,8 @@
 Module: eventdb
-Version: 1.0.0
+Version: 1.1.0
 Description: EventDB module
+Depends: monitoring>=2.4.0
+Description: Integration to browse and acknowledge event in the EventDB
+ EventDB is a event storage and search addon to Icinga.
+ 
+ This module provides a simple access and integration with monitoring.
