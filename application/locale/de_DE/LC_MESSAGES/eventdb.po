@@ -1,0 +1,358 @@
+# Icinga Web 2 - Head for multiple monitoring backends.
+# Copyright (C) 2017 Icinga Development Team
+# This file is distributed under the same license as Eventdb Module.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Eventdb Module (1.0.0)\n"
+"Report-Msgid-Bugs-To: dev@icinga.com\n"
+"POT-Creation-Date: 2017-08-16 16:51+0000\n"
+"PO-Revision-Date: 2017-08-16 19:05+0200\n"
+"Language: de_DE\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Poedit-Basepath: .\n"
+"Last-Translator: Markus Frosch <markus.frosch@icinga.com>\n"
+"Language-Team: \n"
+"X-Generator: Poedit 1.8.11\n"
+"X-Poedit-SearchPath-0: .\n"
+
+#: ../../../../modules/eventdb/application/views/scripts/events/index.phtml:15
+#, php-format
+msgctxt "Multi-selection count"
+msgid "%s row(s) selected"
+msgstr "%s Zeilen ausgewählt"
+
+#: ../../../../modules/eventdb/application/forms/Events/AckFilterForm.php:44
+#: ../../../../modules/eventdb/application/forms/Events/AckFilterForm.php:47
+msgid "Ack"
+msgstr "Bestätigt"
+
+#: ../../../../modules/eventdb/application/forms/Event/EventCommentForm.php:69
+msgid "Acknowledge"
+msgstr "Bestätigen"
+
+#: ../../../../modules/eventdb/application/views/helpers/Column.php:23
+#: ../../../../modules/eventdb/application/views/scripts/events/details.phtml:24
+#: ../../../../modules/eventdb/application/views/scripts/events/index.phtml:72
+#: ../../../../modules/eventdb/application/views/scripts/event/index.phtml:27
+#: ../../../../modules/eventdb/application/views/scripts/event/index.phtml:155
+#: ../../../../modules/eventdb/application/controllers/EventsController.php:66
+#: ../../../../modules/eventdb/application/controllers/EventsController.php:84
+msgid "Acknowledged"
+msgstr "Bestätigt"
+
+#: ../../../../modules/eventdb/application/views/scripts/event/index.phtml:9
+msgid "Acknowledgement"
+msgstr "Bestätigung"
+
+#: ../../../../modules/eventdb/application/views/scripts/event/index.phtml:54
+msgid "Actions"
+msgstr "Aktionen"
+
+#: ../../../../modules/eventdb/application/views/scripts/events/details.phtml:34
+#: ../../../../modules/eventdb/application/views/scripts/event/index.phtml:112
+msgid "Add comment / acknowledge"
+msgstr "Kommentar / Bestätigung hinzufügen"
+
+#: ../../../../modules/eventdb/library/Eventdb/ProvidedHook/Monitoring/EventdbActionHook.php:151
+msgid "All events for host"
+msgstr "Alle Ereignisse für Host"
+
+#: ../../../../modules/eventdb/configuration.php:32
+msgid "Allow to acknowledge and comment events"
+msgstr "Erlauben Ereignisse zu Bestätigen und zu Kommentieren"
+
+#: ../../../../modules/eventdb/configuration.php:27
+msgid "Allow to view comments"
+msgstr "Erlauben Kommentare zu sehen"
+
+#: ../../../../modules/eventdb/configuration.php:22
+msgid "Allow to view events"
+msgstr "Erlauben Ereignisse zu sehen"
+
+#: ../../../../modules/eventdb/application/forms/Config/MonitoringConfigForm.php:40
+msgid "Always enable for hosts"
+msgstr "Immer für Hosts aktivieren"
+
+#: ../../../../modules/eventdb/application/forms/Config/MonitoringConfigForm.php:49
+msgid "Always enable for services"
+msgstr "Immer für Services aktivieren"
+
+#: ../../../../modules/eventdb/application/forms/Config/MonitoringConfigForm.php:39
+msgid ""
+"Always enable the integration on hosts, even when the custom variable is not "
+"set"
+msgstr ""
+"Immer bei Interaktionen mit Hosts anzeigen, auch wenn die angepasste "
+"Variable nicht gesetzt ist"
+
+#: ../../../../modules/eventdb/application/forms/Config/MonitoringConfigForm.php:48
+msgid ""
+"Always enable the integration on services, even when the custom variable is "
+"not set"
+msgstr ""
+"Immer bei Interaktionen mit Services anzeigen, auch wenn die angepasste "
+"Variable nicht gesetzt ist"
+
+#: ../../../../modules/eventdb/application/views/scripts/events/details.phtml:37
+msgid "At least one event is set to auto-clear."
+msgstr "Mindestens ein Ereignis ist für automatische Bestätigung gesetzt."
+
+#: ../../../../modules/eventdb/application/views/scripts/events/details.phtml:25
+#: ../../../../modules/eventdb/application/views/scripts/events/index.phtml:73
+#: ../../../../modules/eventdb/application/views/scripts/event/index.phtml:28
+#: ../../../../modules/eventdb/application/views/scripts/event/index.phtml:156
+msgid "Auto-Clear"
+msgstr "Automatische Bestätigung"
+
+#: ../../../../modules/eventdb/configuration.php:11
+msgid "Backend"
+msgstr "Datenbank"
+
+#: ../../../../modules/eventdb/application/forms/Config/BackendConfigForm.php:86
+msgid ""
+"Cannot find the EventDB schema. Please verify that the given database "
+"contains the schema and that the configured user has access to it."
+msgstr ""
+"Kann das EventDB-Schema nicht finden. Bitte stellen Sie sicher, dass die "
+"angegebene Datenbankverbindung das Schema enthält und dass der konfigurierte "
+"Benutzer Zugriff darauf hat."
+
+#: ../../../../modules/eventdb/application/forms/Config/BackendConfigForm.php:104
+msgid "Check this to not to validate the EventDB schema of the chosen resource"
+msgstr ""
+"Häkchen setzen um das EventDB Schema der gewählten Ressource nicht zu "
+"überprüfen."
+
+#: ../../../../modules/eventdb/application/views/scripts/event/index.phtml:8
+#: ../../../../modules/eventdb/application/forms/Event/EventCommentForm.php:68
+#: ../../../../modules/eventdb/application/forms/Event/EventCommentForm.php:80
+msgid "Comment"
+msgstr "Kommentar"
+
+#: ../../../../modules/eventdb/application/views/scripts/event/index.phtml:122
+msgid "Comments"
+msgstr "Kommentare"
+
+#: ../../../../modules/eventdb/configuration.php:10
+#: ../../../../modules/eventdb/application/views/scripts/config/index.phtml:5
+msgid "Configure EventDB database backend"
+msgstr "EventDB Datenbankverbindung einrichten"
+
+#: ../../../../modules/eventdb/configuration.php:15
+#: ../../../../modules/eventdb/application/views/scripts/config/monitoring.phtml:5
+msgid "Configure integration into the monitoring module"
+msgstr "Interaktionen im Monitoring Modul"
+
+#: ../../../../modules/eventdb/application/views/scripts/config/index.phtml:7
+msgid "Create a New Resource"
+msgstr "Neue Ressource erstellen"
+
+#: ../../../../modules/eventdb/application/views/scripts/config/index.phtml:14
+msgid "Create a new resource"
+msgstr "Neue Ressource erstellen"
+
+#: ../../../../modules/eventdb/application/controllers/EventsController.php:67
+#: ../../../../modules/eventdb/application/controllers/EventsController.php:85
+msgid "Created"
+msgstr "Erstellt"
+
+#: ../../../../modules/eventdb/application/forms/Config/MonitoringConfigForm.php:31
+msgid "Custom Variable"
+msgstr "Angepasste Variable"
+
+#: ../../../../modules/eventdb/application/views/scripts/event/index.phtml:36
+msgid "Details"
+msgstr "Details"
+
+#: ../../../../modules/eventdb/application/forms/Config/MonitoringConfigForm.php:58
+msgid "Disable the detail view"
+msgstr "Detailansicht deaktivieren"
+
+#: ../../../../modules/eventdb/application/forms/Config/MonitoringConfigForm.php:57
+msgid "Disable the detail view inside the monitoring module"
+msgstr "Die Detailansicht innerhalb des Monitoring Moduls deaktivieren"
+
+#: ../../../../modules/eventdb/application/controllers/EventController.php:21
+msgid "Event"
+msgstr "Ereignis"
+
+#: ../../../../modules/eventdb/application/controllers/EventsController.php:19
+#: ../../../../modules/eventdb/application/controllers/EventsController.php:28
+#: ../../../../modules/eventdb/application/controllers/EventsController.php:119
+msgid "Events"
+msgstr "Ereignisse"
+
+# Spezifische Syslog Bezeichnung
+#: ../../../../modules/eventdb/application/controllers/EventsController.php:63
+#: ../../../../modules/eventdb/application/controllers/EventsController.php:81
+msgid "Facility"
+msgstr "Facility"
+
+#: ../../../../modules/eventdb/application/forms/Config/MonitoringConfigForm.php:66
+msgid "Filter events in the detail view area inside the monitoring module"
+msgstr "Ereignisse der Detailansicht im Monitoring Modul filtern"
+
+#: ../../../../modules/eventdb/application/forms/Events/SeverityFilterForm.php:117
+#, php-format
+msgid "Filter in %s"
+msgstr "Filtern nach %s"
+
+#: ../../../../modules/eventdb/application/forms/Events/SeverityFilterForm.php:115
+#, php-format
+msgid "Filter out %s"
+msgstr "Filtern ohne %s"
+
+#: ../../../../modules/eventdb/application/forms/Config/MonitoringConfigForm.php:67
+msgid "Filter the detail view"
+msgstr "Detailansicht filtern"
+
+#: ../../../../modules/eventdb/library/Eventdb/ProvidedHook/Monitoring/EventdbActionHook.php:134
+msgid "Filtered events"
+msgstr "Gefilterte Ereignisse"
+
+#: ../../../../modules/eventdb/application/views/scripts/event/index.phtml:141
+msgid "Grouped Events"
+msgstr "Gruppierte Ereignisse"
+
+#: ../../../../modules/eventdb/application/forms/Events/AckFilterForm.php:26
+msgid "Hide acknowledged events"
+msgstr "Bestätigte Ereignisse verstecken"
+
+#: ../../../../modules/eventdb/application/views/scripts/event/index.phtml:59
+#: ../../../../modules/eventdb/application/controllers/EventsController.php:59
+#: ../../../../modules/eventdb/application/controllers/EventsController.php:77
+msgid "Host"
+msgstr "Host"
+
+#: ../../../../modules/eventdb/application/controllers/EventsController.php:60
+#: ../../../../modules/eventdb/application/controllers/EventsController.php:78
+msgid "Host Address"
+msgstr "Host Adresse"
+
+#: ../../../../modules/eventdb/application/views/scripts/event/index.phtml:99
+msgid "Host service status"
+msgstr "Host Service Status"
+
+#: ../../../../modules/eventdb/library/Eventdb/ProvidedHook/Monitoring/DetailviewExtension.php:66
+msgid "Loading"
+msgstr "Lade"
+
+#: ../../../../modules/eventdb/application/views/scripts/event/index.phtml:50
+#: ../../../../modules/eventdb/application/controllers/EventsController.php:65
+#: ../../../../modules/eventdb/application/controllers/EventsController.php:83
+msgid "Message"
+msgstr "Meldung"
+
+#: ../../../../modules/eventdb/configuration.php:16
+#: ../../../../modules/eventdb/application/views/scripts/event/index.phtml:96
+msgid "Monitoring"
+msgstr "Monitoring"
+
+#: ../../../../modules/eventdb/application/forms/Config/MonitoringConfigForm.php:30
+msgid ""
+"Name of the custom variable to enable EventDB integration for (usually \"edb"
+"\")"
+msgstr ""
+"Name der angepassten Variable um die EventDB Integration zu aktivieren "
+"(normalerweise \"edb\")"
+
+#: ../../../../modules/eventdb/application/views/scripts/event/index.phtml:124
+msgid "No comments recorded for this event yet."
+msgstr "Keine Kommentare für dieses Ereignis."
+
+#: ../../../../modules/eventdb/application/views/scripts/events/index.phtml:33
+msgid "No events recorded yet."
+msgstr "Keine Ereignisse gespeichert."
+
+#: ../../../../modules/eventdb/application/views/scripts/event/index.phtml:57
+msgid "Other events for"
+msgstr "Andere Ereignisse für"
+
+#: ../../../../modules/eventdb/application/views/scripts/events/details.phtml:38
+#: ../../../../modules/eventdb/application/views/scripts/event/index.phtml:116
+msgid "Please only acknowledge manually, if you know what that means."
+msgstr "Bitte nur manuell Bestätigen wenn Sie wissen was das bedeutet."
+
+#: ../../../../modules/eventdb/application/views/scripts/events/index.phtml:6
+msgctxt "Multi-selection help"
+msgid ""
+"Press and hold the Ctrl key while clicking on rows to select multiple rows "
+"or press and hold the Shift key to select a range of rows"
+msgstr ""
+"Drücken und halten Sie STRG während Sie auf Spalten klicken, um mehrere "
+"auszuwählen. Mit der Umschalttaste können Sie Bereiche von Spalten auswählen"
+
+#: ../../../../modules/eventdb/application/controllers/EventsController.php:64
+#: ../../../../modules/eventdb/application/controllers/EventsController.php:82
+msgid "Priority"
+msgstr "Priorität"
+
+#: ../../../../modules/eventdb/application/views/scripts/event/index.phtml:69
+#: ../../../../modules/eventdb/application/controllers/EventsController.php:62
+#: ../../../../modules/eventdb/application/controllers/EventsController.php:80
+msgid "Program"
+msgstr "Programm"
+
+#: ../../../../modules/eventdb/application/views/scripts/event/index.phtml:80
+msgid "Program and Host"
+msgstr "Programm und Host"
+
+#: ../../../../modules/eventdb/application/forms/Config/BackendConfigForm.php:40
+msgid "Resource"
+msgstr "Ressource"
+
+#: ../../../../modules/eventdb/configuration.php:37
+msgid "Restrict views to the events that match the filter"
+msgstr "Ereignisse mit einem Filter einschränken"
+
+#: ../../../../modules/eventdb/application/views/scripts/event/index.phtml:10
+msgid "Revocation"
+msgstr "Widerruf"
+
+#: ../../../../modules/eventdb/application/forms/Event/EventCommentForm.php:70
+msgid "Revoke"
+msgstr "Wiederrufen"
+
+#: ../../../../modules/eventdb/application/forms/Config/BackendConfigForm.php:20
+#: ../../../../modules/eventdb/application/forms/Config/MonitoringConfigForm.php:18
+msgid "Save"
+msgstr "Speichern"
+
+#: ../../../../modules/eventdb/application/views/scripts/events/index.phtml:84
+msgid "Show More"
+msgstr "Mehr zeigen"
+
+#: ../../../../modules/eventdb/application/forms/Events/AckFilterForm.php:29
+msgid "Show also acknowledged events"
+msgstr "Auch bestätigte Ereignisse anzeigen"
+
+#: ../../../../modules/eventdb/application/forms/Config/BackendConfigForm.php:107
+msgid "Skip Validation"
+msgstr "Überprüfung überspringen"
+
+#: ../../../../modules/eventdb/application/forms/Event/EventCommentForm.php:42
+msgid "Submit"
+msgstr "Absenden"
+
+#: ../../../../modules/eventdb/application/forms/Config/BackendConfigForm.php:39
+msgid "The resource to use"
+msgstr "Die zu benutzenden Ressource"
+
+#: ../../../../modules/eventdb/application/views/scripts/event/index.phtml:115
+msgid "This event is set to auto-clear."
+msgstr "Das Ereignis ist auf automatische Bestätigung gesetzt."
+
+#: ../../../../modules/eventdb/application/forms/Event/EventCommentForm.php:66
+#: ../../../../modules/eventdb/application/controllers/EventsController.php:61
+#: ../../../../modules/eventdb/application/controllers/EventsController.php:79
+msgid "Type"
+msgstr "Typ"
+
+#: ../../../../modules/eventdb/library/Eventdb/Eventdb.php:141
+msgid "You need to configure a resource to access the EventDB database first"
+msgstr "Sie müssen zuerst die Datenbank der EventDB konfigurieren"
