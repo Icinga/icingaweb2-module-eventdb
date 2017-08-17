@@ -6,8 +6,8 @@ if (! $this->compact): ?>
 <?php endif ?>
 <div class="content">
 <?php if ($partial !== null): ?>
-    <pre><?= $this->partial($partial . '.phtml', null, $this) ?></pre>
+    <pre class="copyable"><?= $this->partial($partial . '.phtml', null, $this) ?></pre>
 <?php else: ?>
-    <pre><?= htmlspecialchars($text) ?></pre>
+    <pre class="copyable"><?= htmlspecialchars($text) ?></pre>
 <?php endif ?>
 </div>
