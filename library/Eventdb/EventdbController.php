@@ -159,13 +159,18 @@ class EventdbController extends Controller
         exit;
     }
 
-    protected function sendText($str)
+    protected function sendText($str, $script = null)
     {
         if ($this->isPlainTextRequest()) {
-            echo $str;
+            if ($script !== null) {
+                echo $this->view->render($this->getViewScript($script, true));
+            } else {
+                echo $str;
+            }
             exit;
         } else {
             $this->view->text = $str;
+            $this->view->partial = $script;
             $this->setViewScript('format/text');
         }
     }
