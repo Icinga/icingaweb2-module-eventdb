@@ -1,5 +1,12 @@
 # Change Log
 
+## [v1.2.0](https://github.com/Icinga/icingaweb2-module-eventdb/tree/v1.2.0) (2017-08-17)
+[Full Changelog](https://github.com/Icinga/icingaweb2-module-eventdb/compare/v1.1.0...v1.2.0)
+
+**Implemented enhancements:**
+
+- Add more output / format options [\#21](https://github.com/Icinga/icingaweb2-module-eventdb/pull/21) ([lazyfrosch](https://github.com/lazyfrosch))
+
 ## [v1.1.0](https://github.com/Icinga/icingaweb2-module-eventdb/tree/v1.1.0) (2017-08-16)
 [Full Changelog](https://github.com/Icinga/icingaweb2-module-eventdb/compare/v1.0.0...v1.1.0)
 
@@ -24,8 +31,8 @@
 
 **Closed issues:**
 
-- The content of 'Host Address' is not readable [\#4](https://github.com/Icinga/icingaweb2-module-eventdb/issues/4)
 - Add Host Column to Overview [\#2](https://github.com/Icinga/icingaweb2-module-eventdb/issues/2)
+- The content of 'Host Address' is not readable [\#4](https://github.com/Icinga/icingaweb2-module-eventdb/issues/4)
 
 
 
