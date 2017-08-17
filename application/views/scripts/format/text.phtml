@@ -1,0 +1,8 @@
+<?php
+/** @var string $text */
+if (! $this->compact): ?>
+<div class="controls"><?= $this->tabs ?></div>
+<?php endif ?>
+<div class="content">
+    <pre><?= htmlspecialchars($text) ?></pre>
+</div>

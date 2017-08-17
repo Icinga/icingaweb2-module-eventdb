@@ -4,7 +4,9 @@
 namespace Icinga\Module\Eventdb;
 
 use Icinga\Application\Icinga;
+use Icinga\Data\QueryInterface;
 use Icinga\Exception\IcingaException;
+use Icinga\Exception\Json\JsonEncodeException;
 use Icinga\Module\Monitoring\Backend\MonitoringBackend;
 use Icinga\Web\Controller;
 
@@ -60,7 +62,7 @@ class EventdbController extends Controller
     protected function monitoringBackend($name = null)
     {
         if ($this->monitoringBackend === null) {
-            if (!Icinga::app()->getModuleManager()->hasEnabled('monitoring')) {
+            if (! Icinga::app()->getModuleManager()->hasEnabled('monitoring')) {
                 throw new IcingaException('The module "monitoring" must be enabled and configured!');
             }
             $this->monitoringBackend = MonitoringBackend::instance($name);
@@ -68,4 +70,103 @@ class EventdbController extends Controller
         return $this->monitoringBackend;
     }
 
+    protected function setViewScript($name)
+    {
+        $this->_helper->viewRenderer->setNoController(true);
+        $this->_helper->viewRenderer->setScriptAction($name);
+    }
+
+    protected function isFormatRequest()
+    {
+        return $this->hasParam('format');
+    }
+
+    protected function isApiRequest()
+    {
+        $format = $this->getParam('format');
+        $header = $this->getRequest()->getHeader('Accept');
+
+        if ($format === 'json' || preg_match('#application/json(;.+)?#', $header)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    protected function isTextRequest()
+    {
+        $format = $this->getParam('format');
+        if ($format === 'text' || $this->isPlainTextRequest()) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    protected function isPlainTextRequest()
+    {
+        $header = $this->getRequest()->getHeader('Accept');
+        if ($header !== null && preg_match('#text/plain#', $header)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Send the user a summary of SQL queries
+     *
+     * @param array|QueryInterface $queries
+     */
+    protected function sendSqlSummary($queries)
+    {
+        if (! is_array($queries)) {
+            $queries = array($queries);
+        }
+
+        $str = '';
+        foreach ($queries as $query) {
+            if ($query !== null) {
+                $str .= wordwrap($query) . "\n\n";
+            }
+        }
+
+        $this->sendText($str);
+    }
+
+    /**
+     * Output JSON data to the requester
+     *
+     * @param mixed $data
+     * @param int   $options
+     * @param int   $depth
+     *
+     * @throws JsonEncodeException
+     */
+    protected function sendJson($data, $options = 0, $depth = 100)
+    {
+        header('Content-Type: application/json');
+
+        if (defined('JSON_PARTIAL_OUTPUT_ON_ERROR')) {
+            $options |= JSON_PARTIAL_OUTPUT_ON_ERROR;
+        }
+
+        $output = json_encode($data, $options, $depth);
+        if (! $output && json_last_error() !== null) {
+            throw new JsonEncodeException('JSON error: ' . json_last_error_msg());
+        }
+        echo $output;
+        exit;
+    }
+
+    protected function sendText($str)
+    {
+        if ($this->isPlainTextRequest()) {
+            echo $str;
+            exit;
+        } else {
+            $this->view->text = $str;
+            $this->setViewScript('format/text');
+        }
+    }
 }
