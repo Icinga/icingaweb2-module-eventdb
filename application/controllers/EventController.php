@@ -23,7 +23,7 @@ class EventController extends EventdbController
             'active' => ! $this->isFormatRequest(),
             'title'  => $this->translate('Event'),
             'url'    => $url->without(array('format'))
-        ))->extend(new EventdbOutputFormat());
+        ))->extend(new EventdbOutputFormat(array(), array(EventdbOutputFormat::TYPE_TEXT)));
 
         $columnConfig = $this->Config('columns');
         if (! $columnConfig->isEmpty()) {
@@ -109,6 +109,14 @@ class EventController extends EventdbController
                 $data->groupedEvents = $groupedEvents;
             }
             $this->sendJson($data);
+        } elseif ($this->isTextRequest()) {
+            $this->view->event = $eventObj;
+            $this->view->columnConfig = $columnConfig;
+            $this->view->additionalColumns = $additionalColumns;
+            $this->view->groupedEvents = $groupedEvents;
+            $this->view->comments = $comments;
+
+            $this->sendText(null, 'event/index-plain');
         } else {
             if ($commentForm !== null) {
                 $commentForm->handleRequest();

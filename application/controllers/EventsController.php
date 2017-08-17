@@ -28,7 +28,7 @@ class EventsController extends EventdbController
             'active' => ! $this->isFormatRequest(),
             'title'  => $this->translate('Events'),
             'url'    => Url::fromRequest()->without(array('format'))
-        ))->extend(new EventdbOutputFormat());
+        ))->extend(new EventdbOutputFormat(array(), array(EventdbOutputFormat::TYPE_TEXT)));
 
         $columnConfig = $this->Config('columns');
         if ($this->params->has('columns')) {
@@ -97,6 +97,12 @@ class EventsController extends EventdbController
             $data->events = $events->fetchAll();
             $this->sendJson($data);
             exit;
+        } elseif ($this->isTextRequest()) {
+            $this->view->columnConfig = $this->Config('columns');
+            $this->view->additionalColumns = $additionalColumns;
+            $this->view->events = $events;
+
+            $this->sendText(null, 'events/index-plain');
         } else {
             $this->setAutorefreshInterval(15);
 
@@ -124,7 +130,7 @@ class EventsController extends EventdbController
             'active' => ! $this->isFormatRequest(),
             'title'  => $this->translate('Events'),
             'url'    => $url
-        ))->extend(new EventdbOutputFormat());;
+        ))->extend(new EventdbOutputFormat(array(), array(EventdbOutputFormat::TYPE_TEXT)));
 
         $events = $this->getDb()
             ->select()
@@ -142,6 +148,11 @@ class EventsController extends EventdbController
 
         if ($this->isApiRequest()) {
             $this->sendJson($events->fetchAll());
+        } elseif ($this->isTextRequest()) {
+            $this->view->events = $events->fetchAll();
+            $this->view->columnConfig = $this->Config('columns');
+
+            $this->sendText(null, 'events/details-plain');
         } else {
             $commentForm = null;
             if ($this->hasPermission('eventdb/interact')) {

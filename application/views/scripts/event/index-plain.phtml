@@ -1,0 +1,62 @@
+<?php
+/** @var \Icinga\Module\Eventdb\Event $event */
+/** @var array $additionalColumns */
+/** @var \Icinga\Repository\RepositoryQuery $comments */
+/** @var \Icinga\Repository\RepositoryQuery $groupedEvents */
+
+$commentTypes = array(
+    $this->translate('Comment'),
+    $this->translate('Acknowledgement'),
+    $this->translate('Revocation'),
+);
+
+$displayColumns = array_merge(array('program', 'message', 'facility'), $additionalColumns);
+?>
+<?= $this->translate('Timestamp') ?>: <?= $event->created ?>
+
+<?= $this->translate('Priority') ?>: <?= strtoupper($event->getPriority()) ?>
+<?= $event->ack ? sprintf(' (%s)', $this->translate('Acknowledged')) : '' ?>
+
+<?= $this->translate('Type') ?>: <?= $event->getType() ?>
+
+<?php foreach ($displayColumns as $col): ?>
+<?= $this->columnHeader($col, null, true) ?>: <?= htmlspecialchars($event->offsetGet($col)) ?>
+
+<?php endforeach ?>
+
+<?php if ($comments->hasResult()): ?>
+[ <?= $this->translate('Comments') ?> ]
+
+<?php foreach ($comments as $comment): ?>
+<?= $commentTypes[$comment->type] ?>: <?= $comment->created ?>
+
+<?= $this->translate('User') ?>: <?= $comment->user ?>
+
+<?= $this->translate('Message') ?>: <?= $comment->message ?>
+
+
+<?php endforeach ?>
+
+<?php endif; ?>
+<?php if ($groupedEvents !== null && $groupedEvents->hasResult()): ?>
+[ <?= $this->translate('Grouped Events') ?> ]
+
+<?php foreach ($groupedEvents as $groupedEventData):
+    /** @var \Icinga\Module\Eventdb\Event $groupedEvent */
+    $groupedEvent = $this->event($groupedEventData);
+?>
+<?= $this->translate('Timestamp') ?>: <?= $event->created ?>
+
+<?= $this->translate('Priority') ?>: <?= strtoupper($event->getPriority()) ?>
+<?= $event->ack ? sprintf(' (%s)', $this->translate('Acknowledged')) : '' ?>
+
+<?= $this->translate('Type') ?>: <?= $event->getType() ?>
+
+<?php foreach (array('host_name', 'program', 'message') as $col): ?>
+<?= $this->columnHeader($col, null, true) ?>: <?= htmlspecialchars($event->offsetGet($col)) ?>
+
+<?php endforeach ?>
+
+<?php endforeach ?>
+<?php endif; ?>
+

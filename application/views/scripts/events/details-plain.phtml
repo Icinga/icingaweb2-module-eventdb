@@ -1,0 +1,18 @@
+<?php foreach($events as $eventData):
+    /** @var \Icinga\Module\Eventdb\Event $event */
+    $event = $this->event($eventData);
+    $url = $this->url('eventdb/event', array('id' => $event->id));
+?>
+<?= $this->translate('Timestamp') ?>: <?= $event->created ?>
+
+<?= $this->translate('Priority') ?>: <?= strtoupper($event->getPriority()) ?>
+<?= $event->ack ? sprintf(' (%s)', $this->translate('Acknowledged')) : '' ?>
+
+<?= $this->translate('Type') ?>: <?= $event->getType() ?>
+
+<?php foreach (array('host_name', 'program', 'message') as $col): ?>
+<?= $this->columnHeader($col, null, true) ?>: <?= htmlspecialchars($event->offsetGet($col)) ?>
+
+<?php endforeach ?>
+
+<?php endforeach ?>
