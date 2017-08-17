@@ -1,0 +1,13 @@
+<?php
+/** @var string $text */
+/** @var string|null $partial */
+if (! $this->compact): ?>
+<div class="controls"><?= $this->tabs ?></div>
+<?php endif ?>
+<div class="content">
+<?php if ($partial !== null): ?>
+    <pre class="copyable"><?= $this->partial($partial . '.phtml', null, $this) ?></pre>
+<?php else: ?>
+    <pre class="copyable"><?= htmlspecialchars($text) ?></pre>
+<?php endif ?>
+</div>

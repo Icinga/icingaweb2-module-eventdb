@@ -1,0 +1,19 @@
+<?php /** @var \Icinga\Repository\RepositoryQuery $events */
+if (! $events->hasResult()): ?>
+<?= $this->translate('No events recorded yet.') ?>
+<?php else:
+$displayColumns = array_merge(array('host_name', 'program', 'message', 'facility'), $additionalColumns);
+foreach ($events as $eventData): /** @var \Icinga\Module\Eventdb\Event $event */ $event = $this->event($eventData); ?>
+<?= $this->translate('Timestamp') ?>: <?= $event->created ?>
+
+<?= $this->translate('Priority') ?>: <?= strtoupper($event->getPriority()) ?>
+<?= $event->ack ? sprintf(' (%s)', $this->translate('Acknowledged')) : '' ?>
+
+<?= $this->translate('Type') ?>: <?= $event->getType() ?>
+
+<?php foreach ($displayColumns as $col): ?>
+<?= $this->columnHeader($col, null, true) ?>: <?= htmlspecialchars($event->offsetGet($col)) ?>
+
+<?php endforeach ?>
+
+<?php endforeach; endif; ?>
