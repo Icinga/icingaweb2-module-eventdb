@@ -8,6 +8,7 @@ use Icinga\Module\Eventdb\EventdbController;
 use Icinga\Module\Eventdb\Forms\Event\EventCommentForm;
 use Icinga\Module\Eventdb\Forms\Events\AckFilterForm;
 use Icinga\Module\Eventdb\Forms\Events\SeverityFilterForm;
+use Icinga\Module\Eventdb\Web\EventdbOutputFormat;
 use Icinga\Util\StringHelper;
 use Icinga\Web\Url;
 
@@ -24,10 +25,10 @@ class EventsController extends EventdbController
         $this->assertPermission('eventdb/events');
 
         $this->getTabs()->add('events', array(
-            'active' => true,
+            'active' => ! $this->isFormatRequest(),
             'title'  => $this->translate('Events'),
-            'url'    => Url::fromRequest()
-        ));
+            'url'    => Url::fromRequest()->without(array('format'))
+        ))->extend(new EventdbOutputFormat());
 
         $columnConfig = $this->Config('columns');
         if ($this->params->has('columns')) {
@@ -90,35 +91,40 @@ class EventsController extends EventdbController
         $events->peekAhead();
 
         if ($this->params->get('format') === 'sql') {
-            echo '<pre>'
-                . htmlspecialchars(wordwrap($events))
-                . '</pre>';
+            $this->sendSqlSummary($events);
+        } elseif ($this->isApiRequest()) {
+            $data = new \stdClass;
+            $data->events = $events->fetchAll();
+            $this->sendJson($data);
             exit;
+        } else {
+            $this->setAutorefreshInterval(15);
+
+            $severityFilterForm = new SeverityFilterForm();
+            $severityFilterForm->handleRequest();
+
+            $ackFilterForm = new AckFilterForm();
+            $ackFilterForm->handleRequest();
+
+            $this->view->ackFilterForm = $ackFilterForm;
+            $this->view->columnConfig = $this->Config('columns');
+            $this->view->additionalColumns = $additionalColumns;
+            $this->view->events = $events;
+            $this->view->severityFilterForm = $severityFilterForm;
         }
-
-        $this->setAutorefreshInterval(15);
-
-        $severityFilterForm = new SeverityFilterForm();
-        $severityFilterForm->handleRequest();
-
-        $ackFilterForm = new AckFilterForm();
-        $ackFilterForm->handleRequest();
-
-        $this->view->ackFilterForm = $ackFilterForm;
-        $this->view->columnConfig = $this->Config('columns');
-        $this->view->additionalColumns = $additionalColumns;
-        $this->view->events = $events;
-        $this->view->severityFilterForm = $severityFilterForm;
     }
 
     public function detailsAction()
     {
         $this->assertPermission('eventdb/events');
 
+        $url = Url::fromRequest()->without(array('format'));
+
         $this->getTabs()->add('events', array(
-            'title' => $this->translate('Events'),
-            'url'   => Url::fromRequest()
-        ))->activate('events');
+            'active' => ! $this->isFormatRequest(),
+            'title'  => $this->translate('Events'),
+            'url'    => $url
+        ))->extend(new EventdbOutputFormat());;
 
         $events = $this->getDb()
             ->select()
@@ -126,7 +132,7 @@ class EventsController extends EventdbController
 
         $this->getDb()->filterGroups($events);
 
-        $filter = Filter::fromQueryString($this->getRequest()->getUrl()->getQueryString());
+        $filter = Filter::fromQueryString($url->getQueryString());
         $events->applyFilter($filter);
 
         $events->applyFilter(Filter::matchAny(array_map(
@@ -134,17 +140,21 @@ class EventsController extends EventdbController
             $this->getRestrictions('eventdb/events/filter', 'eventdb/events')
         )));
 
-        $commentForm = null;
-        if ($this->hasPermission('eventdb/interact')) {
-            $commentForm = new EventCommentForm();
-            $commentForm
-                ->setDb($this->getDb())
-                ->setFilter($filter)
-                ->handleRequest();
-            $this->view->commentForm = $commentForm;
-        }
+        if ($this->isApiRequest()) {
+            $this->sendJson($events->fetchAll());
+        } else {
+            $commentForm = null;
+            if ($this->hasPermission('eventdb/interact')) {
+                $commentForm = new EventCommentForm();
+                $commentForm
+                    ->setDb($this->getDb())
+                    ->setFilter($filter)
+                    ->handleRequest();
+                $this->view->commentForm = $commentForm;
+            }
 
-        $this->view->events = $events->fetchAll();
-        $this->view->columnConfig = $this->Config('columns');
+            $this->view->events = $events->fetchAll();
+            $this->view->columnConfig = $this->Config('columns');
+        }
     }
 }

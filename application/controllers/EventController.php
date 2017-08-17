@@ -8,6 +8,7 @@ use Icinga\Exception\NotFoundError;
 use Icinga\Module\Eventdb\Event;
 use Icinga\Module\Eventdb\EventdbController;
 use Icinga\Module\Eventdb\Forms\Event\EventCommentForm;
+use Icinga\Module\Eventdb\Web\EventdbOutputFormat;
 use Icinga\Web\Url;
 
 class EventController extends EventdbController
@@ -16,11 +17,13 @@ class EventController extends EventdbController
     {
         $eventId = $this->params->getRequired('id');
 
+        $url = Url::fromRequest();
+
         $this->getTabs()->add('event', array(
-            'active'    => true,
-            'title'     => $this->translate('Event'),
-            'url'       => Url::fromRequest()
-        ));
+            'active' => ! $this->isFormatRequest(),
+            'title'  => $this->translate('Event'),
+            'url'    => $url->without(array('format'))
+        ))->extend(new EventdbOutputFormat());
 
         $columnConfig = $this->Config('columns');
         if (! $columnConfig->isEmpty()) {
@@ -95,35 +98,29 @@ class EventController extends EventdbController
 
         $format = $this->params->get('format');
         if ($format === 'sql') {
-            echo '<pre>'
-                . htmlspecialchars(wordwrap($event))
-                . '</pre>';
-
+            $this->sendSqlSummary(array($event, $comments, $groupedEvents));
+        } elseif ($this->isApiRequest()) {
+            $data = new \stdClass;
+            $data->event = $eventData;
             if ($comments !== null) {
-                echo '<pre>'
-                    . htmlspecialchars(wordwrap($comments))
-                    . '</pre>';
+                $data->comments = $comments;
             }
-
             if ($groupedEvents !== null) {
-                echo '<pre>'
-                    . htmlspecialchars(wordwrap($groupedEvents))
-                    . '</pre>';
+                $data->groupedEvents = $groupedEvents;
+            }
+            $this->sendJson($data);
+        } else {
+            if ($commentForm !== null) {
+                $commentForm->handleRequest();
             }
 
-            exit;
+            $this->view->event = $eventObj;
+            $this->view->columnConfig = $columnConfig;
+            $this->view->additionalColumns = $additionalColumns;
+            $this->view->groupedEvents = $groupedEvents;
+            $this->view->comments = $comments;
+            $this->view->commentForm = $commentForm;
         }
-
-        if ($commentForm !== null) {
-            $commentForm->handleRequest();
-        }
-
-        $this->view->event = $eventObj;
-        $this->view->columnConfig = $columnConfig;
-        $this->view->additionalColumns = $additionalColumns;
-        $this->view->groupedEvents = $groupedEvents;
-        $this->view->comments = $comments;
-        $this->view->commentForm = $commentForm;
     }
 
     /**
@@ -187,7 +184,7 @@ class EventController extends EventdbController
                 Url::fromPath(
                     'monitoring/service/show',
                     array(
-                        'host' => $realService->host_name,
+                        'host'    => $realService->host_name,
                         'service' => $realService->service
                     )
                 )
