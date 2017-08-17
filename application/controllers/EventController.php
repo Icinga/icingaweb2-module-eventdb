@@ -161,7 +161,7 @@ class EventController extends EventdbController
 
         $realHostname = $query->fetchOne();
 
-        if ($realHostname !== null) {
+        if ($realHostname !== null && $realHostname !== false) {
             $this->redirectNow(Url::fromPath('monitoring/host/services', array('host' => $realHostname)));
         } else {
             throw new NotFoundError('Could not find a hostname matching: %s', $host);
@@ -187,7 +187,7 @@ class EventController extends EventdbController
 
         $realService = $query->fetchRow();
 
-        if ($realService !== null) {
+        if ($realService !== null && $realService !== false) {
             $this->redirectNow(
                 Url::fromPath(
                     'monitoring/service/show',
