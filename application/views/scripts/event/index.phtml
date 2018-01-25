@@ -48,7 +48,7 @@ if (! $this->compact): ?>
     </table>
     <?php if ($event->message): ?>
     <h2><?= $this->translate('Message') ?></h2>
-    <div class="event-message detail preformatted"><?= $event->message ?></div>
+    <div class="event-message detail preformatted"><?= $this->eventMessage($event->message) ?></div>
     <?php endif; ?>
 
     <?php

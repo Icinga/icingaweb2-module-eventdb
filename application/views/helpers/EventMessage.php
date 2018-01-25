@@ -6,6 +6,16 @@ use Icinga\Application\Config;
 class Zend_View_Helper_EventMessage extends Zend_View_Helper_Abstract
 {
     /**
+     * The RegExp for locating URLs.
+     *
+     * Modifications:
+     *  - Don't allow ; in
+     *
+     * @source https://mathiasbynens.be/demo/url-regex
+     */
+    const URL_REGEX = '@(https?)://(-\.)?([^\s/?\.#-]+\.?)+(/[^\s;]*)?@i';
+
+    /**
      * Purifier instance
      *
      * @var HTMLPurifier
@@ -14,7 +24,22 @@ class Zend_View_Helper_EventMessage extends Zend_View_Helper_Abstract
 
     public function eventMessage($message)
     {
-        return $this->getPurifier()->purify($message);
+        $htm = $this->getPurifier()->purify($message);
+
+        // search for URLs and make them a link
+        $htm = preg_replace_callback(
+            static::URL_REGEX,
+            function ($match) {
+                return sprintf(
+                    '<a href="%s" target="_blank">%s</a>',
+                    htmlspecialchars($match[0]),
+                    htmlspecialchars($match[0])
+                );
+            },
+            $htm
+        );
+
+        return $htm;
     }
 
     /**
