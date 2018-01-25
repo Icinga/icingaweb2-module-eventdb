@@ -31,7 +31,7 @@ class DetailviewExtension extends DetailviewExtensionHook
         }
 
         $actions = clone EventdbActionHook::getActions($object);
-        if (empty($actions)) {
+        if (! $actions->hasRenderableItems()) {
             // no actions -> no EventDB
             return '';
         }
