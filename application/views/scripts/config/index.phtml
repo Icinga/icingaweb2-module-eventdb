@@ -2,7 +2,7 @@
     <?= $tabs ?>
 </div>
 <div class="content">
-    <h2><?= $this->translate('Configure EventDB database backend') ?></h2>
+    <h2><?= $this->translate('Database backend') ?></h2>
     <?= $this->qlink(
         $this->translate('Create a New Resource'),
         'config/createresource',
@@ -14,5 +14,8 @@
             'title'            => $this->translate('Create a new resource'),
         )
     ) ?>
-    <?= $form ?>
+    <?= $backendConfig ?>
+
+    <h2><?= $this->translate('Configure module') ?></h2>
+    <?= $globalConfig ?>
 </div>

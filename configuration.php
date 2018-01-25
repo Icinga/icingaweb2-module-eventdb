@@ -1,14 +1,22 @@
 <?php
+/** @var Icinga\Application\Modules\Module $this */
+
+$config = $this->getConfig();
+
+$url = 'eventdb/events';
+if (($default_filter = $config->get('global', 'default_filter')) !== null) {
+    $url .= '?' . $default_filter;
+}
 
 $section = $this->menuSection('EventDB', array(
     'icon'      => 'tasks',
     'priority'  => 200,
-    'url'       => 'eventdb/events',
+    'url'       => $url,
 ));
 
-$this->provideConfigTab('backend', array(
-    'title' => $this->translate('Configure EventDB database backend'),
-    'label' => $this->translate('Backend'),
+$this->provideConfigTab('config', array(
+    'title' => $this->translate('Configure EventDB'),
+    'label' => $this->translate('Config'),
     'url' => 'config'
 ));
 $this->provideConfigTab('monitoring', array(

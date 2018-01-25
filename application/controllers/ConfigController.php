@@ -4,6 +4,7 @@
 namespace Icinga\Module\Eventdb\Controllers;
 
 use Icinga\Module\Eventdb\Forms\Config\BackendConfigForm;
+use Icinga\Module\Eventdb\Forms\Config\GlobalConfigForm;
 use Icinga\Module\Eventdb\Forms\Config\MonitoringConfigForm;
 use Icinga\Web\Controller;
 
@@ -21,8 +22,15 @@ class ConfigController extends Controller
         $backendConfig
             ->setIniConfig($this->Config())
             ->handleRequest();
-        $this->view->form = $backendConfig;
-        $this->view->tabs = $this->Module()->getConfigTabs()->activate('backend');
+        $this->view->backendConfig = $backendConfig;
+
+        $globalConfig = new GlobalConfigForm();
+        $globalConfig
+            ->setIniConfig($this->Config())
+            ->handleRequest();
+        $this->view->globalConfig = $globalConfig;
+
+        $this->view->tabs = $this->Module()->getConfigTabs()->activate('config');
     }
 
     public function monitoringAction()
