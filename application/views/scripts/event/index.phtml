@@ -51,6 +51,12 @@ if (! $this->compact): ?>
     <div class="event-message detail preformatted"><?= $event->message ?></div>
     <?php endif; ?>
 
+    <?php
+    foreach ($extensionsHtml as $extensionHtml) {
+        echo $extensionHtml;
+    }
+    ?>
+
     <h2><?= $this->translate('Actions') ?></h2>
     <table class="name-value-table" data-base-target="_next">
         <tr>

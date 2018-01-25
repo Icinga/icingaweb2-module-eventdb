@@ -8,7 +8,9 @@ use Icinga\Exception\NotFoundError;
 use Icinga\Module\Eventdb\Event;
 use Icinga\Module\Eventdb\EventdbController;
 use Icinga\Module\Eventdb\Forms\Event\EventCommentForm;
+use Icinga\Module\Eventdb\Hook\DetailviewExtensionHook;
 use Icinga\Module\Eventdb\Web\EventdbOutputFormat;
+use Icinga\Web\Hook;
 use Icinga\Web\Url;
 
 class EventController extends EventdbController
@@ -128,6 +130,16 @@ class EventController extends EventdbController
             $this->view->groupedEvents = $groupedEvents;
             $this->view->comments = $comments;
             $this->view->commentForm = $commentForm;
+
+            $this->view->extensionsHtml = array();
+            foreach (Hook::all('Eventdb\DetailviewExtension') as $hook) {
+                /** @var DetailviewExtensionHook $hook */
+                $module = $this->view->escape($hook->getModule()->getName());
+                $this->view->extensionsHtml[] =
+                    '<div class="icinga-module module-' . $module . '" data-icinga-module="' . $module . '">'
+                    . $hook->setView($this->view)->getHtmlForEvent($eventObj)
+                    . '</div>';
+            }
         }
     }
 
