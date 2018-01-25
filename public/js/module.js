@@ -10,6 +10,7 @@
     EventDB.prototype = {
         initialize: function() {
             this.module.on('rendered', this.enableCopyable);
+            this.module.on('submit', 'form.severity-filter-form', this.severitySubmit);
 
             var addCSSRule = function(sheet, selector, rules, index) {
                 if('insertRule' in sheet) {
@@ -83,6 +84,12 @@
             } else if (window.getSelection) {
                 window.getSelection().removeAllRanges();
             }
+        },
+        severitySubmit: function(ev) {
+            $(ev.currentTarget)
+                .find('input[type=submit]')
+                .prop('disabled', true)
+                .addClass('disabled');
         }
     };
 

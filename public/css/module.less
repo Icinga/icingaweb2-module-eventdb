@@ -271,3 +271,15 @@ div.warning {
 .copyable-actions {
   margin-bottom: 0.5em;
 }
+
+input[type=submit].disabled,
+button.disabled {
+  border-color: @gray-light !important;
+  background-color: white !important;
+  color: @gray-light !important;
+
+  &:hover {
+    background: @gray-light !important;
+    color: white;
+  }
+}
