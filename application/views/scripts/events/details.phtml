@@ -30,6 +30,13 @@ if (! $this->compact):
         </tr>
     <?php endforeach; ?>
     </table>
+
+    <?php
+    foreach ($extensionsHtml as $extensionHtml) {
+        echo $extensionHtml;
+    }
+    ?>
+
     <?php if (isset($commentForm)): ?>
         <h3><?= $this->translate('Add comment / acknowledge') ?></h3>
         <?php if ($autoClear): ?>

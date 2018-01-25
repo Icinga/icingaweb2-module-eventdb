@@ -8,8 +8,10 @@ use Icinga\Module\Eventdb\EventdbController;
 use Icinga\Module\Eventdb\Forms\Event\EventCommentForm;
 use Icinga\Module\Eventdb\Forms\Events\AckFilterForm;
 use Icinga\Module\Eventdb\Forms\Events\SeverityFilterForm;
+use Icinga\Module\Eventdb\Hook\DetailviewExtensionHook;
 use Icinga\Module\Eventdb\Web\EventdbOutputFormat;
 use Icinga\Util\StringHelper;
+use Icinga\Web\Hook;
 use Icinga\Web\Url;
 
 class EventsController extends EventdbController
@@ -166,6 +168,16 @@ class EventsController extends EventdbController
 
             $this->view->events = $events->fetchAll();
             $this->view->columnConfig = $this->Config('columns');
+
+            $this->view->extensionsHtml = array();
+            foreach (Hook::all('Eventdb\DetailviewExtension') as $hook) {
+                /** @var DetailviewExtensionHook $hook */
+                $module = $this->view->escape($hook->getModule()->getName());
+                $this->view->extensionsHtml[] =
+                    '<div class="icinga-module module-' . $module . '" data-icinga-module="' . $module . '">'
+                    . $hook->setView($this->view)->getHtmlForEvents($this->view->events)
+                    . '</div>';
+            }
         }
     }
 }

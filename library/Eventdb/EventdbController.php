@@ -9,9 +9,13 @@ use Icinga\Exception\IcingaException;
 use Icinga\Exception\Json\JsonEncodeException;
 use Icinga\Module\Monitoring\Backend\MonitoringBackend;
 use Icinga\Web\Controller;
+use Icinga\Web\View;
 
 class EventdbController extends Controller
 {
+    /** @var View */
+    public $view;
+
     /** @var  MonitoringBackend */
     protected $monitoringBackend;
 
