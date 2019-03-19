@@ -5,6 +5,7 @@ namespace Icinga\Module\Eventdb;
 
 use Icinga\Application\Config;
 use Icinga\Data\ConfigObject;
+use Icinga\Data\Db\DbQuery;
 use Icinga\Data\Filter\Filter;
 use Icinga\Data\Filter\FilterExpression;
 use Icinga\Data\ResourceFactory;
@@ -22,10 +23,11 @@ class Eventdb extends DbRepository
     /**
      * {@inheritdoc}
      */
-    protected $tableAliases = array(
+    protected $tableAliases = [
         'comment' => 'c',
         'event'   => 'e',
-    );
+        'grouped' => 'ge',
+    ];
 
     /**
      * Default query columns
@@ -39,11 +41,11 @@ class Eventdb extends DbRepository
             'host_address',
             'type',
             'facility',
-            'priority',
+            'priority' => 'e.priority',
             'program',
             'message',
             'alternative_message',
-            'ack',
+            'ack'      => 'e.ack',
             'created',
             'modified',
         ),
@@ -59,16 +61,28 @@ class Eventdb extends DbRepository
     );
 
     protected static $edbcQueryColumns = array(
-        'event' => array(
+        'event'   => array(
             'group_active',
             'group_id',
             'group_count',
-            'group_leader',
+            'group_leader' => 'e.group_leader',
             'group_autoclear',
             'flags',
-            'alternative_message'
-        )
+            'alternative_message',
+            'ack'          => 'MIN(ge.ack)',
+            'priority'     => 'MAX(ge.priority)',
+//            'ack'          => 'CASE WHEN MIN(ge.ack) < e.ack THEN MIN(ge.ack) ELSE e.ack END',
+//            'priority'     => 'CASE WHEN MAX(ge.priority) > e.priority THEN MAX(ge.priority) ELSE e.priority END',
+        ),
+        'grouped' => [
+            'group_ack'      => 'MIN(ge.ack)',
+            'group_priority' => 'MAX(ge.priority)',
+        ],
     );
+
+    protected $virtualTables = [
+        'grouped' => 'event',
+    ];
 
     /** @var bool */
     protected $hasCorrelatorExtensions = null;
@@ -92,6 +106,10 @@ class Eventdb extends DbRepository
     public function filterGroups(RepositoryQuery $query)
     {
         if ($this->hasCorrelatorExtensions()) {
+            /** @var DbQuery $q */
+            $q = $query->getQuery();
+            $q->group('e.id');
+
             $query->addFilter(Filter::matchAny(
                 Filter::expression('group_leader', '=', -1),
                 new FilterExpression('group_leader', 'IS', new \Zend_Db_Expr('NULL'))
@@ -123,10 +141,32 @@ class Eventdb extends DbRepository
         return $queryColumns;
     }
 
+    public function requireQueryColumn($table, $name, RepositoryQuery $query = null)
+    {
+        if ($table === 'event' && $this->hasCorrelatorExtensions()) {
+            $this->joinColumn('group_ack', $table, $query);
+            $this->joinColumn('group_priority', $table, $query);
+        }
+
+        return parent::requireQueryColumn($table, $name, $query);
+    }
+
+    protected function joinGrouped(RepositoryQuery $query, $target, $name)
+    {
+        /** @var DbQuery $q */
+        $q = $query->getQuery();
+
+        $q->joinLeft(
+            ['ge' => 'event'],
+            'ge.group_id = e.group_id',
+            []
+        );
+    }
+
     /**
      * Create and return a new instance of the Eventdb
      *
-     * @param   ConfigObject    $config     The configuration to use, otherwise the module's configuration
+     * @param   ConfigObject $config The configuration to use, otherwise the module's configuration
      *
      * @return  static
      *
@@ -161,7 +201,7 @@ class Eventdb extends DbRepository
     /**
      * Convert an IP address into its human-readable form
      *
-     * @param   string  $rawAddress
+     * @param   string $rawAddress
      *
      * @return  string
      */
@@ -173,7 +213,7 @@ class Eventdb extends DbRepository
     /**
      * Convert an IP address into its binary form
      *
-     * @param   string  $address
+     * @param   string $address
      *
      * @return  string
      */
