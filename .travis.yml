@@ -1,3 +1,6 @@
+arch:
+   - amd64
+   - ppc64le
 language: php
 php:
   - '5.4'
@@ -14,12 +17,15 @@ cache:
 matrix:
   fast_finish: true
   allow_failures:
+  - php: '5.4'    # not supported on Xenial
+  - php: '5.5'    # not supported on Xenial
   - php: nightly
 
 branches:
   only:
   - master
   - /^v\d/
+  - ppc64le
 
 before_script:
 - ./test/setup_vendor.sh
